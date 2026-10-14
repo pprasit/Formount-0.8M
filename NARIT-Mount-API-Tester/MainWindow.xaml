@@ -1,0 +1,801 @@
+<Window x:Class="NARIT.Mount.API.Tester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="NARIT Mount API - Test Client"
+        Width="1280" Height="1860"
+        Background="#0F1419"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!-- Colors -->
+        <SolidColorBrush x:Key="Bg"          Color="#0F1419"/>
+        <SolidColorBrush x:Key="Card"        Color="#1E1E1E"/>
+        <SolidColorBrush x:Key="CardAlt"     Color="#252526"/>
+        <SolidColorBrush x:Key="Border"      Color="#3F3F46"/>
+        <SolidColorBrush x:Key="Accent"      Color="#3B82F6"/>
+        <SolidColorBrush x:Key="Green"       Color="#10B981"/>
+        <SolidColorBrush x:Key="Red"         Color="#EF4444"/>
+        <SolidColorBrush x:Key="Amber"       Color="#F59E0B"/>
+        <SolidColorBrush x:Key="TextPri"     Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextSec"     Color="#9CA3AF"/>
+
+        <!-- TextBox -->
+        <Style x:Key="TB" TargetType="TextBox">
+            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="CBItem" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource TextPri}"/>
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#334155"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#2563EB"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CB" TargetType="ComboBox">
+            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPri}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource CBItem}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="OuterBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="38"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Left"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+
+                                    <ToggleButton Grid.Column="1"
+                                                  Focusable="False"
+                                                  IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                  ClickMode="Press"
+                                                  Background="#2B3545"
+                                                  BorderBrush="{StaticResource Border}"
+                                                  BorderThickness="1,0,0,0">
+                                        <Path Width="10"
+                                              Height="6"
+                                              Stretch="Fill"
+                                              Fill="#D1D5DB"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Data="M 0 0 L 5 6 L 10 0 Z"/>
+                                    </ToggleButton>
+                                </Grid>
+                            </Border>
+
+                            <Popup x:Name="Popup"
+                                   Placement="Bottom"
+                                   PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Fade">
+                                <Border Margin="0,4,0,0"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        Background="#111827"
+                                        BorderBrush="{StaticResource Border}"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                    <ScrollViewer Margin="0"
+                                                  SnapsToDevicePixels="True"
+                                                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="#60A5FA"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="HasItems" Value="False">
+                                <Setter TargetName="Popup" Property="MinHeight" Value="32"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                                <Setter TargetName="OuterBorder" Property="Background" Value="#1F2937"/>
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="#374151"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button -->
+        <Style x:Key="Btn" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2563EB"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#4B5563"/>
+                    <Setter Property="Foreground" Value="#6B7280"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Section label -->
+        <Style x:Key="Sec" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- Status value -->
+        <Style x:Key="Val" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Green}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Label -->
+        <Style x:Key="Lbl" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextSec}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="110"/>
+        </Style>
+
+        <Style x:Key="StarGrid" TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserResizeColumns" Value="False"/>
+            <Setter Property="CanUserSortColumns" Value="True"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="RowBackground" Value="#1F2937"/>
+            <Setter Property="AlternatingRowBackground" Value="#243041"/>
+            <Setter Property="Background" Value="#111827"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPri}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Height" Value="240"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#0F172A"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSec}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Foreground" Value="{StaticResource TextPri}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#334155"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#1D4ED8"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title bar -->
+        <Border Background="{StaticResource CardAlt}" BorderBrush="{StaticResource Border}" BorderThickness="0,0,0,1">
+            <Grid Margin="16,0">
+                <TextBlock Text="NARIT Mount API - Test Client  v1.0"
+                           Foreground="White" FontSize="14" FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Ellipse x:Name="dotConnection" Width="8" Height="8" Fill="{StaticResource Red}" Margin="0,0,6,0"/>
+                    <TextBlock x:Name="txtConnectionState" Text="Disconnected"
+                               Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Tabs -->
+        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="8">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Foreground" Value="{StaticResource TextSec}"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Padding" Value="18,8"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="Bd" Background="Transparent"
+                                        BorderThickness="0,0,0,2" BorderBrush="Transparent"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- TAB 1 : Control & Status -->
+            <TabItem Header="Control &amp; Status">
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="340"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="180"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- LEFT: Commands -->
+                    <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}"
+                            BorderThickness="1" CornerRadius="6" Padding="12"
+                            Grid.RowSpan="2">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="0,0,10,0">
+
+                                <!-- Connection -->
+                                <TextBlock Style="{StaticResource Sec}" Text="CONNECTION"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <Button x:Name="btnConnect" Content="Connect" Style="{StaticResource Btn}"
+                                            Click="BtnConnect_Click" Background="{StaticResource Green}" Margin="0,0,6,0"/>
+                                    <Button x:Name="btnDisconnect" Content="Disconnect" Style="{StaticResource Btn}"
+                                            Click="BtnDisconnect_Click" Background="{StaticResource Red}" IsEnabled="False"/>
+                                </StackPanel>
+
+                                <!-- Observer Site -->
+                                <TextBlock Style="{StaticResource Sec}" Text="OBSERVER SITE"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="55"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Lat" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="txtLat" Text="18.5736" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="1" Text="Lon" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtLon" Text="98.4820" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="2" Text="Elev (m)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtElev" Text="2457" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="3" Text="UTC+" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtUtcOffset" Text="7" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                </Grid>
+                                <Button Content="Set Observer Site" Style="{StaticResource Btn}" Click="BtnSetSite_Click"
+                                        HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <!-- Pointing Model -->
+                                <TextBlock Style="{StaticResource Sec}" Text="POINTING MODEL"/>
+                                <TextBlock Text="Model File" Foreground="{StaticResource TextSec}" FontSize="11" Margin="0,0,0,4"/>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="92"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="txtPointingModelPath" Style="{StaticResource TB}" Text="C:\PointingModels\model.pxp"/>
+                                    <Button Grid.Column="2" Content="Browse..." Style="{StaticResource Btn}" Click="BtnBrowsePointingModel_Click"/>
+                                </Grid>
+                                <Button Content="Set Pointing Model Path" Style="{StaticResource Btn}" Click="BtnSetPointingModelPath_Click"
+                                        HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <!-- Drive Control -->
+                                <TextBlock Style="{StaticResource Sec}" Text="DRIVE CONTROL"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <Button Content="Enable" Style="{StaticResource Btn}" Click="BtnEnable_Click"
+                                            Background="#059669" Margin="0,0,6,0"/>
+                                    <Button Content="Disable" Style="{StaticResource Btn}" Click="BtnDisable_Click"
+                                            Background="#DC2626" Margin="0,0,6,0"/>
+                                    <Button Content="STOP" Style="{StaticResource Btn}" Click="BtnStop_Click"
+                                            Background="#B91C1C" FontWeight="Bold"/>
+                                </StackPanel>
+
+                                <!-- Goto Position -->
+                                <TextBlock Style="{StaticResource Sec}" Text="GOTO POSITION"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="55"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/><RowDefinition/><RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Az (&#x00B0;)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="txtGotoAz" Text="180.0" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="1" Text="Alt (&#x00B0;)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtGotoAlt" Text="45.0" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="2" Text="Vel (&#x00B0;/s)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtGotoVel" Text="5.0" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                </Grid>
+                                <Button Content="Goto Position" Style="{StaticResource Btn}" Click="BtnGoto_Click"
+                                        HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <!-- Jog -->
+                                <TextBlock Style="{StaticResource Sec}" Text="JOG BOTH AXES (SINGLE COMMAND)"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="55"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/><RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Az (&#x00B0;/s)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="txtJogAz" Text="0.5" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="1" Text="Alt (&#x00B0;/s)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtJogAlt" Text="0.0" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                </Grid>
+                                <Button Content="Jog Both Axes" Style="{StaticResource Btn}" Click="BtnJog_Click"
+                                        HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <!-- Offset -->
+                                <TextBlock Style="{StaticResource Sec}" Text="TELESCOPE OFFSET"/>
+                                <TextBlock Text="Offset Type" Foreground="{StaticResource TextSec}" FontSize="11" Margin="0,0,0,4"/>
+                                <ComboBox x:Name="cmbOffsetType" Style="{StaticResource CB}" Margin="0,0,0,8" SelectedIndex="0"
+                                          SelectionChanged="CmbOffsetType_Changed">
+                                    <ComboBoxItem Content="RA / Dec" Tag="RaDec"/>
+                                    <ComboBoxItem Content="Alt / Azm" Tag="AltAzm"/>
+                                </ComboBox>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="58"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Step Size" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="txtOffsetStep" Text="10" Style="{StaticResource TB}" Margin="0,0,6,0"/>
+                                    <TextBlock Grid.Column="2" Text="arcsec" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <TextBlock Text="Direction" Foreground="{StaticResource TextSec}" FontSize="11" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="3" Rows="3" Margin="0,0,0,8">
+                                    <Button Content="&#x2196;" Tag="NW" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Button Content="&#x2191;" Tag="N" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Button Content="&#x2197;" Tag="NE" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Button Content="&#x2190;" Tag="W" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Border Margin="2" Background="#2D3748" CornerRadius="4" Height="42">
+                                        <TextBlock Text="&#x2022;" Foreground="#9CA3AF" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Button Content="&#x2192;" Tag="E" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Button Content="&#x2199;" Tag="SW" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Button Content="&#x2193;" Tag="S" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                    <Button Content="&#x2198;" Tag="SE" Click="BtnOffset_Click" Style="{StaticResource Btn}" Margin="2" FontSize="16" Padding="0" Height="42"/>
+                                </UniformGrid>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock x:Name="lblOffsetAxis1" Grid.Row="0" Text="RA" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="valOffsetAxis1" Grid.Row="0" Grid.Column="1" Style="{StaticResource Val}" Text="0.00&quot;" HorizontalAlignment="Right"/>
+                                    <TextBlock x:Name="lblOffsetAxis2" Grid.Row="1" Text="Dec" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="valOffsetAxis2" Grid.Row="1" Grid.Column="1" Style="{StaticResource Val}" Text="0.00&quot;" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Button Content="Reset Offset" Style="{StaticResource Btn}" Click="BtnResetOffset_Click"
+                                        Background="{StaticResource Red}" HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <!-- Tracking -->
+                                <TextBlock Style="{StaticResource Sec}" Text="TRACKING"/>
+                                <TextBlock Text="Bright Stars (Top 200)" Foreground="{StaticResource TextSec}" FontSize="11" Margin="0,0,0,4"/>
+                                <DataGrid x:Name="dgBrightStars"
+                                          Style="{StaticResource StarGrid}"
+                                          Margin="0,0,0,6"
+                                          Sorting="DgBrightStars_Sorting"
+                                          SelectionChanged="DgBrightStars_SelectionChanged">
+                                    <DataGrid.Columns>
+                                        <DataGridTemplateColumn Header="Track"
+                                                                Width="44"
+                                                                IsReadOnly="True"
+                                                                SortMemberPath="IsTrackable">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Ellipse Width="12"
+                                                                 Height="12"
+                                                                 Fill="{Binding AvailabilityBrush}"
+                                                                 Stroke="#0B1220"
+                                                                 StrokeThickness="1"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTextColumn Header="Object Name"
+                                                            Binding="{Binding Name}"
+                                                            Width="*"
+                                                            IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <TextBlock x:Name="txtSelectedStarInfo"
+                                           Text="Select a bright star to track."
+                                           Foreground="{StaticResource TextSec}"
+                                           FontSize="11"
+                                           Margin="0,0,0,4"
+                                           TextWrapping="Wrap"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,12">
+                                    <Button Content="Track Object" Style="{StaticResource Btn}" Click="BtnTrackObject_Click"
+                                            Background="#7C3AED" Margin="0,0,6,0"/>
+                                    <Button Content="Track Sidereal" Style="{StaticResource Btn}" Click="BtnTrackSidereal_Click"
+                                            Background="#6D28D9" Margin="0,0,6,0"/>
+                                    <Button Content="Stop Tracking" Style="{StaticResource Btn}" Click="BtnStopTracking_Click"
+                                            Background="{StaticResource Red}"/>
+                                </StackPanel>
+
+                                <!-- Small Body Tracking -->
+                                <TextBlock Style="{StaticResource Sec}" Text="ASTEROID TRACKING"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                        <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Name" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="txtAsteroidName" Text="Ceres" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="1" Text="Epoch JD" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtAsteroidEpochJd" Text="2460400.5" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="2" Text="a (AU)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtAsteroidA" Text="2.7675" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="3" Text="e" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtAsteroidE" Text="0.0758" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="4" Text="i (deg)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtAsteroidI" Text="10.5930" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="5" Text="Node" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="5" Grid.Column="1" x:Name="txtAsteroidNode" Text="80.3055" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="6" Text="Arg Peri" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtAsteroidArgPeri" Text="73.5977" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="7" Text="M (deg)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtAsteroidM" Text="174.1902" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                </Grid>
+                                <Button Content="Track Asteroid" Style="{StaticResource Btn}" Click="BtnTrackAsteroid_Click"
+                                        Background="#2563EB" HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <TextBlock Style="{StaticResource Sec}" Text="COMET TRACKING"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                        <RowDefinition/><RowDefinition/><RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Name" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="txtCometName" Text="Halley" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="1" Text="Perihelion JD" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCometPerihelionJd" Text="2446467.4" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="2" Text="q (AU)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCometQ" Text="0.5860" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="3" Text="e" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCometE" Text="0.9671" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="4" Text="i (deg)" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtCometI" Text="162.2627" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="5" Text="Node" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="5" Grid.Column="1" x:Name="txtCometNode" Text="58.4201" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                    <TextBlock Grid.Row="6" Text="Arg Peri" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtCometArgPeri" Text="111.3325" Style="{StaticResource TB}" Margin="0,0,0,3"/>
+                                </Grid>
+                                <Button Content="Track Comet" Style="{StaticResource Btn}" Click="BtnTrackComet_Click"
+                                        Background="#0EA5A4" HorizontalAlignment="Stretch" Margin="0,2,0,12"/>
+
+                                <!-- Polling -->
+                                <TextBlock Style="{StaticResource Sec}" Text="STATUS POLLING"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Button Content="GetStatus()" Style="{StaticResource Btn}" Click="BtnGetStatus_Click" Margin="0,0,6,0"/>
+                                    <Button Content="GetPosition()" Style="{StaticResource Btn}" Click="BtnGetPosition_Click" Margin="0,0,6,0"/>
+                                    <Button Content="GetTrackingInfo()" Style="{StaticResource Btn}" Click="BtnGetTrackingInfo_Click"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <CheckBox x:Name="chkAutoRefresh" Content="Auto-refresh (2 Hz)"
+                                              Foreground="{StaticResource TextSec}" FontSize="11"
+                                              Checked="ChkAutoRefresh_Changed" Unchecked="ChkAutoRefresh_Changed"/>
+                                </StackPanel>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- RIGHT-TOP: Live Status -->
+                    <Border Grid.Column="2" Background="{StaticResource Card}" BorderBrush="{StaticResource Border}"
+                            BorderThickness="1" CornerRadius="6" Padding="14">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource Sec}" Text="MOUNT STATUS" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Col 1 -->
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource Sec}" Text="GENERAL" FontSize="10" Foreground="{StaticResource Amber}"/>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="State"/><TextBlock x:Name="valState" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Mount Enabled"/><TextBlock x:Name="valEnabled" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="NTP Synced"/><TextBlock x:Name="valNtp" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="NTP Offset"/><TextBlock x:Name="valNtpOffset" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="UTC Time"/><TextBlock x:Name="valUtc" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="JD"/><TextBlock x:Name="valJd" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+
+                                        <TextBlock Style="{StaticResource Sec}" Text="POSITION" FontSize="10" Foreground="{StaticResource Amber}" Margin="0,12,0,6"/>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Az Raw"/><TextBlock x:Name="valAzRaw" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Alt Raw"/><TextBlock x:Name="valAltRaw" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Az Corrected"/><TextBlock x:Name="valAzCorr" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Alt Corrected"/><TextBlock x:Name="valAltCorr" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                    </StackPanel>
+
+                                    <!-- Col 2 -->
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Style="{StaticResource Sec}" Text="TRACKING" FontSize="10" Foreground="{StaticResource Amber}"/>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Mode"/><TextBlock x:Name="valTrackMode" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Object"/><TextBlock x:Name="valTrackObj" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Cmd RA"/><TextBlock x:Name="valCmdRaJ2000" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Cmd Dec"/><TextBlock x:Name="valCmdDecJ2000" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Actual RA J2000"/><TextBlock x:Name="valActualRaJ2000" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Actual Dec J2000"/><TextBlock x:Name="valActualDecJ2000" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="On Target"/><TextBlock x:Name="valOnTarget" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Duration"/><TextBlock x:Name="valDuration" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="LST"/><TextBlock x:Name="valLst" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+
+                                        <TextBlock Style="{StaticResource Sec}" Text="AXES" FontSize="10" Foreground="{StaticResource Amber}" Margin="0,12,0,6"/>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Az Status"/><TextBlock x:Name="valAzAxisStatus" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Alt Status"/><TextBlock x:Name="valAltAxisStatus" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Az Cmd Vel"/><TextBlock x:Name="valAzCmdVel" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Alt Cmd Vel"/><TextBlock x:Name="valAltCmdVel" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Az RMS"/><TextBlock x:Name="valAzRms" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                        <Grid Margin="0,0,0,3"><TextBlock Style="{StaticResource Lbl}" Text="Alt RMS"/><TextBlock x:Name="valAltRms" Style="{StaticResource Val}" Text="--" HorizontalAlignment="Right" Margin="0,0,10,0"/></Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- RIGHT-BOTTOM: Event Log -->
+                    <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource Card}"
+                            BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="6"
+                            Padding="10" Margin="0,8,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Style="{StaticResource Sec}" Text="EVENT LOG" Margin="0"/>
+                                <Button Content="Clear" Style="{StaticResource Btn}" HorizontalAlignment="Right"
+                                        Padding="8,2" FontSize="9" Background="#4B5563" Click="BtnClearLog_Click"/>
+                            </Grid>
+                            <TextBox Grid.Row="1" x:Name="txtLog"
+                                     IsReadOnly="True" TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     Background="#111827" Foreground="#D1D5DB"
+                                     BorderThickness="0" FontFamily="Consolas" FontSize="11"
+                                     AcceptsReturn="True"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 2 : Code Generator -->
+            <TabItem Header="Code Generator">
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="340"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT: Method picker + params -->
+                    <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}"
+                            BorderThickness="1" CornerRadius="6" Padding="12">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource Sec}" Text="SELECT API METHOD"/>
+                            <ComboBox x:Name="cmbCategory" Margin="0,0,0,8" FontSize="12"
+                                      Style="{StaticResource CB}"
+                                      SelectionChanged="CmbCategory_Changed">
+                                <ComboBoxItem Content="Connection" IsSelected="True"/>
+                                <ComboBoxItem Content="Configuration"/>
+                                <ComboBoxItem Content="Drive Control"/>
+                                <ComboBoxItem Content="Motion"/>
+                                <ComboBoxItem Content="Tracking"/>
+                                <ComboBoxItem Content="Status (Polling)"/>
+                                <ComboBoxItem Content="Events (Subscribe)"/>
+                                <ComboBoxItem Content="Full Example"/>
+                            </ComboBox>
+
+                            <ListBox x:Name="lstMethods" Height="280" Margin="0,0,0,12"
+                                     Background="#1A1A2E" Foreground="White" FontSize="12"
+                                     BorderBrush="{StaticResource Border}" BorderThickness="1"
+                                     SelectionChanged="LstMethods_Changed">
+                            </ListBox>
+
+                            <!-- Dynamic parameters -->
+                            <TextBlock Style="{StaticResource Sec}" Text="PARAMETERS"/>
+                            <Grid x:Name="gridParams" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock x:Name="lblP1" Text="" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" x:Name="txtP1" Style="{StaticResource TB}" Margin="0,0,0,3" Visibility="Collapsed"/>
+                                <TextBlock Grid.Row="1" x:Name="lblP2" Text="" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtP2" Style="{StaticResource TB}" Margin="0,0,0,3" Visibility="Collapsed"/>
+                                <TextBlock Grid.Row="2" x:Name="lblP3" Text="" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtP3" Style="{StaticResource TB}" Margin="0,0,0,3" Visibility="Collapsed"/>
+                                <TextBlock Grid.Row="3" x:Name="lblP4" Text="" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtP4" Style="{StaticResource TB}" Margin="0,0,0,3" Visibility="Collapsed"/>
+                                <TextBlock Grid.Row="4" x:Name="lblP5" Text="" Foreground="{StaticResource TextSec}" FontSize="11" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtP5" Style="{StaticResource TB}" Margin="0,0,0,3" Visibility="Collapsed"/>
+                            </Grid>
+
+                            <Button Content="Generate Code" Style="{StaticResource Btn}" Background="{StaticResource Green}"
+                                    HorizontalAlignment="Stretch" Click="BtnGenerate_Click"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- RIGHT: Code output -->
+                    <Border Grid.Column="2" Background="{StaticResource Card}" BorderBrush="{StaticResource Border}"
+                            BorderThickness="1" CornerRadius="6" Padding="12">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Style="{StaticResource Sec}" Text="GENERATED C# CODE" Margin="0"/>
+                                <Button Content="Copy to Clipboard" Style="{StaticResource Btn}" HorizontalAlignment="Right"
+                                        Padding="10,4" FontSize="10" Background="#6D28D9" Click="BtnCopy_Click"/>
+                            </Grid>
+                            <TextBox Grid.Row="1" x:Name="txtCode"
+                                     IsReadOnly="True" TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto" AcceptsReturn="True"
+                                     Background="#0D1117" Foreground="#E6EDF3"
+                                     BorderBrush="{StaticResource Border}" BorderThickness="1"
+                                     FontFamily="Consolas" FontSize="12"
+                                     Padding="12"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Change Log">
+                <Grid Margin="0,8,0,0">
+                    <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}"
+                            BorderThickness="1" CornerRadius="6" Padding="0">
+                        <wv2:WebView2 x:Name="wbChangeLog"
+                                      Loaded="WbChangeLog_Loaded" />
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="User Manual">
+                <Grid Margin="0,8,0,0">
+                    <Border Background="{StaticResource Card}" BorderBrush="{StaticResource Border}"
+                            BorderThickness="1" CornerRadius="6" Padding="0">
+                        <wv2:WebView2 x:Name="wbUserManual"
+                                      Loaded="WbUserManual_Loaded" />
+                    </Border>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>

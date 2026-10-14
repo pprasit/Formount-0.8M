@@ -1,0 +1,30 @@
+const {chromium}=require(process.env.MOUNT_PLAYWRIGHT_MODULE||'playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({channel:'msedge',headless:true});
+ const page=await browser.newPage({viewport:{width:1500,height:1000}});const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(process.env.MOUNT_TEST_URL||'http://localhost:8765');
+ await page.waitForFunction(()=>document.querySelector('#mode-badge').textContent==='LIVE ELMO');
+ assert.equal(await page.locator('#enable-all').isEnabled(),true);
+ assert.deepEqual(await page.locator('.axis-card').evaluateAll(e=>e.map(v=>v.dataset.axis)),['azimuth','altitude','rotator','m3']);
+ for(const id of ['rotator','m3']){assert.equal(await page.locator(`#target-${id}`).getAttribute('min'),'0');assert.equal(await page.locator(`#target-${id}`).getAttribute('max'),'359');}
+ await page.locator('[data-nav="astronomy"]').click();
+ await page.locator('#sky-preview').click();
+ await page.waitForFunction(()=>document.querySelector('#target-preview').textContent.includes('Encoder'));
+ await page.locator('#load-stars').click();
+ await page.waitForFunction(()=>document.querySelector('#sky-star').options.length>1);
+ await page.locator('#sky-star').selectOption({index:1});
+ await page.screenshot({path:'runtime/astronomy-desktop.png'});
+ await page.locator('[data-nav="camera"]').click();
+ await page.waitForFunction(()=>document.querySelector('#camera-status').textContent==='NO CAMERA');
+ assert.equal(await page.locator('#camera-capture').isDisabled(),true);
+ await page.screenshot({path:'runtime/camera-desktop.png'});
+ await page.setViewportSize({width:390,height:844});
+ await page.locator('[data-nav="astronomy"]').click();
+ await page.screenshot({path:'runtime/astronomy-mobile.png'});
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollTop),0);
+ assert.deepEqual(errors,[]);
+ await browser.close();console.log('Workbench passed: live control availability, travel bounds, astronomy preview, real catalog, camera state, mobile. No motor commands sent.');
+})().catch(e=>{console.error(e);process.exit(1)});

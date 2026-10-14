@@ -1,0 +1,928 @@
+﻿<Window x:Class="ForkMount_WPF.UI.Altitude_Control_Parameters_Window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Altitude Control Parameters (Axis 2)"
+        Height="700" Width="900"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="#1E1E1E"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+    
+    <Window.Resources>
+        <!-- Modern Dark Theme Colors -->
+        <SolidColorBrush x:Key="DarkBackground" Color="#0F1419"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#1A1F2E"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#2D3748"/>
+        <SolidColorBrush x:Key="PrimaryAccent" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#10B981"/>
+        <SolidColorBrush x:Key="ErrorRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="WarningOrange" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#9CA3AF"/>
+        
+        <!-- Modern ScrollBar Style -->
+        <Style x:Key="ModernScrollBar" TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" CornerRadius="4"/>
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb Background="#4B5563" BorderThickness="0">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4" Margin="1"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PART_Track" Property="Thumb.Background" Value="#6B7280"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ScrollViewer Style -->
+        <Style x:Key="ModernScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ScrollContentPresenter Grid.Column="0"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                       Grid.Column="1"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                       Style="{StaticResource ModernScrollBar}"
+                                       Margin="4,0,0,0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryAccent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- Increment/Decrement Button Style -->
+        <Style x:Key="UpDownButton" TargetType="Button">
+            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryAccent}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2563EB"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Border Background="{StaticResource DarkBackground}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="12">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" 
+                            Opacity="0.8" 
+                            ShadowDepth="0" 
+                            BlurRadius="30"
+                            Direction="0"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Border Grid.Row="0"
+                    Background="#252D3D"
+                    CornerRadius="12,12,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Height="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Title -->
+                    <StackPanel Grid.Column="0" 
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="16,0,0,0">
+                        <Path Data="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+                              Fill="{StaticResource PrimaryAccent}"
+                              Width="16"
+                              Height="16"
+                              Stretch="Uniform"
+                              Margin="0,0,8,0"/>
+                        <TextBlock Text="Altitude Control Parameters"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Save to Flash Button + Close Button -->
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,8,0">
+
+                        <!-- Save to Flash Button -->
+                        <Button x:Name="btnSaveFlash"
+                                Click="BtnSaveFlash_Click"
+                                Height="32"
+                                Padding="12,0"
+                                Margin="0,0,8,0"
+                                ToolTip="Save parameters to Drive Flash memory"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#10B981"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="border"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="6"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <!-- Save Icon -->
+                                                        <Path Data="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"
+                                                              Fill="White"
+                                                              Width="14"
+                                                              Height="14"
+                                                              Stretch="Uniform"
+                                                              Margin="0,0,6,0"
+                                                              VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Save Flash"
+                                                                   Foreground="White"
+                                                                   FontSize="12"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#059669"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#047857"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="border" Property="Background" Value="#374151"/>
+                                                        <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                    <!-- Close Button -->
+                    <Button Grid.Column="2"
+                            Click="BtnClose_Click"
+                            Width="32"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            ToolTip="Close"
+                            Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                <Path Data="M 6,6 L 18,18 M 18,6 L 6,18"
+                                                      Stroke="{StaticResource TextSecondary}"
+                                                      StrokeThickness="2"
+                                                      Stretch="Uniform"
+                                                      Margin="8"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource ErrorRed}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main Content with Tuning Parameters -->
+            <Border Grid.Row="1"
+                    Background="{StaticResource CardBackground}"
+                    Padding="24">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              Style="{StaticResource ModernScrollViewer}">
+                    <StackPanel>
+                        <!-- PD Controller Section -->
+                        <TextBlock Text="PD Controller (External Loop)"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,16"/>
+                        
+                        <Grid Margin="0,0,0,24">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Proportional Gain (Kp) -->
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Proportional Gain (Kp)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtKp"
+                                     Grid.Row="0" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtKp_LostFocus"/>
+                            <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnKpUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnKpDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtKpOffset"
+                                     Grid.Row="0" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtKpOffset_LostFocus"/>
+                            
+                            <!-- Integral Gain (Ki) -->
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Integral Gain (Ki)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtKi"
+                                     Grid.Row="1" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtKi_LostFocus"/>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnKiUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnKiDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtKiOffset"
+                                     Grid.Row="1" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtKiOffset_LostFocus"/>
+                            
+                            <!-- Derivative Gain (Kd) -->
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Derivative Gain (Kd)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtKd"
+                                     Grid.Row="2" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtKd_LostFocus"/>
+                            <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnKdUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnKdDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtKdOffset"
+                                     Grid.Row="2" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtKdOffset_LostFocus"/>
+                            
+                            <!-- Deadband (deg) -->
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                       Text="Deadband (deg)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtDeadband"
+                                     Grid.Row="3" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtDeadband_LostFocus"/>
+                            <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnDeadbandUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnDeadbandDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtDeadbandOffset"
+                                     Grid.Row="3" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtDeadbandOffset_LostFocus"/>
+                            
+                            <!-- Acceleration (deg/s2) -->
+                            <TextBlock Grid.Row="4" Grid.Column="0"
+                                       Text="Acceleration (deg/s²)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtAcceleration"
+                                     Grid.Row="4" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtAcceleration_LostFocus"/>
+                            <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnAccelerationUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnAccelerationDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtAccelerationOffset"
+                                     Grid.Row="4" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtAccelerationOffset_LostFocus"/>
+                            
+                            <!-- Deceleration (deg/s2) -->
+                            <TextBlock Grid.Row="5" Grid.Column="0"
+                                       Text="Deceleration (deg/s²)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtDeceleration"
+                                     Grid.Row="5" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtDeceleration_LostFocus"/>
+                            <StackPanel Grid.Row="5" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnDecelerationUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnDecelerationDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtDecelerationOffset"
+                                     Grid.Row="5" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtDecelerationOffset_LostFocus"/>
+                            
+                            <!-- Stop Deceleration (deg/s²) -->
+                            <TextBlock Grid.Row="6" Grid.Column="0"
+                                       Text="Stop Deceleration (deg/s²)"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtStopDeceleration"
+                                     Grid.Row="6" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtStopDeceleration_LostFocus"/>
+                            <StackPanel Grid.Row="6" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnStopDecelerationUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnStopDecelerationDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtStopDecelerationOffset"
+                                     Grid.Row="6" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtStopDecelerationOffset_LostFocus"/>
+                        </Grid>
+
+                        <!-- Separator -->
+                        <Border Background="{StaticResource BorderBrush}"
+                                Height="1"
+                                Margin="0,0,0,24"/>
+                        
+                        <!-- Elmo Internal Loop Section -->
+                        <TextBlock Text="Elmo Internal Loop (Drive Parameters)"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,16"/>
+                        
+                        <Grid Margin="0,0,0,24">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Velocity Gain (KP[2]) -->
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Velocity Gain (KP[2])"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtVelocityGain"
+                                     Grid.Row="0" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtVelocityGain_LostFocus"/>
+                            <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnVelocityGainUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnVelocityGainDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtVelocityGainOffset"
+                                     Grid.Row="0" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtVelocityGainOffset_LostFocus"/>
+
+                            <!-- Velocity Integral (KI[2]) -->
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Velocity Integral (KI[2])"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtVelocityIntegral"
+                                     Grid.Row="1" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtVelocityIntegral_LostFocus"/>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnVelocityIntegralUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnVelocityIntegralDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtVelocityIntegralOffset"
+                                     Grid.Row="1" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtVelocityIntegralOffset_LostFocus"/>
+
+                            <!-- Position Gain (KP[3]) -->
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Position Gain (KP[3])"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtPositionGain"
+                                     Grid.Row="2" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtPositionGain_LostFocus"/>
+                            <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnPositionGainUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnPositionGainDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtPositionGainOffset"
+                                     Grid.Row="2" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtPositionGainOffset_LostFocus"/>
+
+                            <!-- Acc Feed Forward (FF[1]) -->
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                       Text="Acc Feed Forward (FF[1])"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtAccFeedForward"
+                                     Grid.Row="3" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,12"
+                                     LostFocus="TxtAccFeedForward_LostFocus"/>
+                            <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,4,12">
+                                <Button Content="▲" Height="19" Click="BtnAccFeedForwardUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnAccFeedForwardDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtAccFeedForwardOffset"
+                                     Grid.Row="3" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,0,12"
+                                     LostFocus="TxtAccFeedForwardOffset_LostFocus"/>
+
+                            <!-- Vel Feed Forward (FF[2]) -->
+                            <TextBlock Grid.Row="4" Grid.Column="0"
+                                       Text="Vel Feed Forward (FF[2])"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="13"
+                                       Margin="0,0,0,12"/>
+                            <TextBox x:Name="txtVelFeedForward"
+                                     Grid.Row="4" Grid.Column="1"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,4,0"
+                                     LostFocus="TxtVelFeedForward_LostFocus"/>
+                            <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,4,0">
+                                <Button Content="▲" Height="19" Click="BtnVelFeedForwardUp_Click" Style="{StaticResource UpDownButton}"/>
+                                <Button Content="▼" Height="19" Click="BtnVelFeedForwardDown_Click" Style="{StaticResource UpDownButton}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtVelFeedForwardOffset"
+                                     Grid.Row="4" Grid.Column="3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     LostFocus="TxtVelFeedForwardOffset_LostFocus"/>
+                        
+                        </Grid>
+
+                        <!-- Separator -->
+                        <Border Background="{StaticResource BorderBrush}"
+                                Height="1"
+                                Margin="0,0,0,24"/>
+                        
+                        <!-- Elmo Filter Parameters Section -->
+                        <TextBlock Text="Elmo Filter Parameters"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,16"/>
+                        
+                        <Grid Margin="0,0,0,24">
+                            <Grid.RowDefinitions>
+                                <!-- Filter #1 -->
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Filter #2 -->
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Filter #3 -->
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Filter #4 -->
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Feedback Filter #1 -->
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Feedback Filter #2 -->
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Filter #1 -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Filter #1"
+                                       Foreground="{StaticResource PrimaryAccent}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="1" Text="Type (KV[5])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbFilter1Type" Grid.Row="1" Grid.Column="1"
+                                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"
+                                      SelectionChanged="CmbFilter1Type_SelectionChanged"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Disable" Tag="0"/>
+                                <ComboBoxItem Content="Low-Pass" Tag="1"/>
+                                <ComboBoxItem Content="Lead-Lag" Tag="2"/>
+                                <ComboBoxItem Content="Double Lead-Lag" Tag="3"/>
+                                <ComboBoxItem Content="Notch" Tag="4"/>
+                                <ComboBoxItem Content="Anti-Notch" Tag="5"/>
+                                <ComboBoxItem Content="General-Biquad" Tag="6"/>
+                                <ComboBoxItem Content="Pole Zero" Tag="7"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="2" Text="Frequency [Hz] (KV[1])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter1Freq" Grid.Row="2" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter1Freq_LostFocus"/>
+
+                            <TextBlock Grid.Row="3" Text="Damping (KV[2])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,16"/>
+                            <TextBox x:Name="txtFilter1Damp" Grid.Row="3" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,16"
+                                     LostFocus="TxtFilter1Damp_LostFocus"/>
+
+                            <!-- Filter #2 -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Filter #2"
+                                       Foreground="{StaticResource PrimaryAccent}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="5" Text="Type (KV[10])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbFilter2Type" Grid.Row="5" Grid.Column="1"
+                                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"
+                                      SelectionChanged="CmbFilter2Type_SelectionChanged"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Disable" Tag="0"/>
+                                <ComboBoxItem Content="Low-Pass" Tag="1"/>
+                                <ComboBoxItem Content="Lead-Lag" Tag="2"/>
+                                <ComboBoxItem Content="Double Lead-Lag" Tag="3"/>
+                                <ComboBoxItem Content="Notch" Tag="4"/>
+                                <ComboBoxItem Content="Anti-Notch" Tag="5"/>
+                                <ComboBoxItem Content="General-Biquad" Tag="6"/>
+                                <ComboBoxItem Content="Pole Zero" Tag="7"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="6" Text="Frequency [Hz] (KV[6])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter2Freq" Grid.Row="6" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter2Freq_LostFocus"/>
+
+                            <TextBlock Grid.Row="7" Text="Q Factor (KV[7])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter2Q" Grid.Row="7" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter2Q_LostFocus"/>
+
+                            <TextBlock Grid.Row="8" Text="Magnitude [dB] (KV[8])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,16"/>
+                            <TextBox x:Name="txtFilter2Mag" Grid.Row="8" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,16"
+                                     LostFocus="TxtFilter2Mag_LostFocus"/>
+
+                            <!-- Filter #3 -->
+                            <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Filter #3"
+                                       Foreground="{StaticResource PrimaryAccent}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="10" Text="Type (KV[15])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbFilter3Type" Grid.Row="10" Grid.Column="1"
+                                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"
+                                      SelectionChanged="CmbFilter3Type_SelectionChanged"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Disable" Tag="0"/>
+                                <ComboBoxItem Content="Low-Pass" Tag="1"/>
+                                <ComboBoxItem Content="Lead-Lag" Tag="2"/>
+                                <ComboBoxItem Content="Double Lead-Lag" Tag="3"/>
+                                <ComboBoxItem Content="Notch" Tag="4"/>
+                                <ComboBoxItem Content="Anti-Notch" Tag="5"/>
+                                <ComboBoxItem Content="General-Biquad" Tag="6"/>
+                                <ComboBoxItem Content="Pole Zero" Tag="7"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="11" Text="Frequency [Hz] (KV[11])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter3Freq" Grid.Row="11" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter3Freq_LostFocus"/>
+
+                            <TextBlock Grid.Row="12" Text="Q Factor (KV[12])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter3Q" Grid.Row="12" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter3Q_LostFocus"/>
+
+                            <TextBlock Grid.Row="13" Text="Magnitude [dB] (KV[13])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,24"/>
+                            <TextBox x:Name="txtFilter3Mag" Grid.Row="13" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,24"
+                                     LostFocus="TxtFilter3Mag_LostFocus"/>
+
+                            <!-- Filter #4 -->
+                            <TextBlock Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Filter #4"
+                                       Foreground="{StaticResource PrimaryAccent}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="15" Text="Type (KV[20])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbFilter4Type" Grid.Row="15" Grid.Column="1"
+                                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"
+                                      SelectionChanged="CmbFilter4Type_SelectionChanged"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Disable" Tag="0"/>
+                                <ComboBoxItem Content="Low-Pass" Tag="1"/>
+                                <ComboBoxItem Content="Lead-Lag" Tag="2"/>
+                                <ComboBoxItem Content="Double Lead-Lag" Tag="3"/>
+                                <ComboBoxItem Content="Notch" Tag="4"/>
+                                <ComboBoxItem Content="Anti-Notch" Tag="5"/>
+                                <ComboBoxItem Content="General-Biquad" Tag="6"/>
+                                <ComboBoxItem Content="Pole Zero" Tag="7"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="16" Text="Frequency [Hz] (KV[16])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter4Freq" Grid.Row="16" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter4Freq_LostFocus"/>
+
+                            <TextBlock Grid.Row="17" Text="Q Factor (KV[17])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFilter4Q" Grid.Row="17" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFilter4Q_LostFocus"/>
+
+                            <TextBlock Grid.Row="18" Text="Magnitude [dB] (KV[18])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,24"/>
+                            <TextBox x:Name="txtFilter4Mag" Grid.Row="18" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,24"
+                                     LostFocus="TxtFilter4Mag_LostFocus"/>
+
+                            <!-- Feedback Filter #1 -->
+                            <TextBlock Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Feedback Filter #1"
+                                       Foreground="{StaticResource WarningOrange}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="20" Grid.Column="0" Text="Type (KV[55])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbFeedbackFilter1Type" Grid.Row="20" Grid.Column="1"
+                                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"
+                                      SelectionChanged="CmbFeedbackFilter1Type_SelectionChanged"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Disable" Tag="0"/>
+                                <ComboBoxItem Content="Low-Pass" Tag="1"/>
+                                <ComboBoxItem Content="Lead-Lag" Tag="2"/>
+                                <ComboBoxItem Content="Double Lead-Lag" Tag="3"/>
+                                <ComboBoxItem Content="Notch" Tag="4"/>
+                                <ComboBoxItem Content="Anti-Notch" Tag="5"/>
+                                <ComboBoxItem Content="General-Biquad" Tag="6"/>
+                                <ComboBoxItem Content="Pole Zero" Tag="7"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="21" Grid.Column="0" Text="Frequency [Hz] (KV[51])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFeedbackFilter1Freq" Grid.Row="21" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFeedbackFilter1Freq_LostFocus"/>
+
+                            <TextBlock Grid.Row="22" Grid.Column="0" Text="Q Factor (KV[52])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFeedbackFilter1Q" Grid.Row="22" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFeedbackFilter1Q_LostFocus"/>
+
+                            <TextBlock Grid.Row="23" Grid.Column="0" Text="Magnitude [dB] (KV[53])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,24"/>
+                            <TextBox x:Name="txtFeedbackFilter1Mag" Grid.Row="23" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,24"
+                                     LostFocus="TxtFeedbackFilter1Mag_LostFocus"/>
+
+                            <!-- Feedback Filter #2 -->
+                            <TextBlock Grid.Row="24" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="Feedback Filter #2"
+                                       Foreground="{StaticResource WarningOrange}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Grid.Row="25" Grid.Column="0" Text="Type (KV[56])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cmbFeedbackFilter2Type" Grid.Row="25" Grid.Column="1"
+                                      Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"
+                                      SelectionChanged="CmbFeedbackFilter2Type_SelectionChanged"
+                                      SelectedIndex="0">
+                                <ComboBoxItem Content="Disable" Tag="0"/>
+                                <ComboBoxItem Content="Low-Pass" Tag="1"/>
+                                <ComboBoxItem Content="Lead-Lag" Tag="2"/>
+                                <ComboBoxItem Content="Double Lead-Lag" Tag="3"/>
+                                <ComboBoxItem Content="Notch" Tag="4"/>
+                                <ComboBoxItem Content="Anti-Notch" Tag="5"/>
+                                <ComboBoxItem Content="General-Biquad" Tag="6"/>
+                                <ComboBoxItem Content="Pole Zero" Tag="7"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="26" Grid.Column="0" Text="Frequency [Hz] (KV[56])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFeedbackFilter2Freq" Grid.Row="26" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFeedbackFilter2Freq_LostFocus"/>
+
+                            <TextBlock Grid.Row="27" Grid.Column="0" Text="Q Factor (KV[57])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtFeedbackFilter2Q" Grid.Row="27" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"
+                                     LostFocus="TxtFeedbackFilter2Q_LostFocus"/>
+
+                            <TextBlock Grid.Row="28" Grid.Column="0" Text="Magnitude [dB] (KV[58])"
+                                       Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,0,24"/>
+                            <TextBox x:Name="txtFeedbackFilter2Mag" Grid.Row="28" Grid.Column="1" Text="0"
+                                     Style="{StaticResource ModernTextBox}" Margin="0,0,0,24"
+                                     LostFocus="TxtFeedbackFilter2Mag_LostFocus"/>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            </Grid>
+    </Border>
+</Window>
+
+
+
+

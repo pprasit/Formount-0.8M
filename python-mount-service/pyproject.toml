@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "narit-mount-service"
+version = "0.1.0"
+description = "Four-axis Elmo mount service and local observatory dashboard"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "uvicorn[standard]>=0.30,<1", "pyserial>=3.5,<4", "orjson>=3.10,<4", "astropy>=7,<9", "pythonnet>=3,<4", "pillow>=11,<13", "sgp4>=2.24,<3"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "httpx>=0.27,<1"]
+
+[tool.setuptools.packages.find]
+include = ["mount_service*"]
+
+[tool.setuptools.package-data]
+mount_service = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PXPLib Pointing Model"
+  short_description: "Work with PXPLib pointing model calibration workflows"
+  default_prompt: "Use $pxplib-pointing-model to inspect or update PXPLib pointing model behavior in MountController-API."

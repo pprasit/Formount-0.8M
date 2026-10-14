@@ -1,0 +1,289 @@
+<UserControl x:Class="ForkMount_WPF.UI.AzimuthChartPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ForkMount_WPF.UI"
+             xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
+    
+    <UserControl.Resources>
+        <!-- VS Dark Theme Colors -->
+        <SolidColorBrush x:Key="CardBackground" Color="#252526"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#3F3F46"/>
+        <SolidColorBrush x:Key="PrimaryAccent" Color="#007ACC"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#CCCCCC"/>
+    </UserControl.Resources>
+    
+    <Border Background="#2A3040"
+            CornerRadius="12"
+            Padding="20,5,20,20">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.3" ShadowDepth="2" BlurRadius="10"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Chart Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Icon and Real-time Values -->
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="150"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Blue Line Icon -->
+                    <Border Grid.Column="0"
+                            Background="#007ACC"
+                            Width="4"
+                            CornerRadius="2"
+                            VerticalAlignment="Center"
+                            Margin="0,0,12,0"/>
+                    
+                    <!-- Act Pos -->
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0"
+                                   Text="Act Pos:"
+                                   Foreground="#9CA3AF"
+                                   FontSize="12"
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center"/>
+                        
+                        <TextBlock Grid.Column="1"
+                                   x:Name="txtActPos"
+                                   Text="0.000"
+                                   Foreground="#10B981"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   FontFamily="Consolas"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Margin="4,0"/>
+                        
+                        <TextBlock Grid.Column="2"
+                                   Text="&#176;"
+                                   Foreground="#10B981"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                    
+                    <!-- Act Vel -->
+                    <Grid Grid.Column="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0"
+                                   Text="Act Vel:"
+                                   Foreground="#9CA3AF"
+                                   FontSize="12"
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center"
+                                   Padding="10,0,0,0"/>
+                        
+                        <TextBlock Grid.Column="1"
+                                   x:Name="txtActVel"
+                                   Text="0.000"
+                                   Foreground="#3B82F6"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   FontFamily="Consolas"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Margin="4,0"/>
+                        
+                        <TextBlock Grid.Column="2"
+                                   Text="&#176;/s"
+                                   Foreground="#3B82F6"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                    
+                    <!-- Act Current -->
+                    <Grid Grid.Column="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0"
+                                   Text="Act Current:"
+                                   Foreground="#9CA3AF"
+                                   FontSize="12"
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center"
+                                   Padding="15,0,0,0"/>
+                        
+                        <TextBlock Grid.Column="1"
+                                   x:Name="txtActCurrent"
+                                   Text="0.000"
+                                   Foreground="#F59E0B"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   FontFamily="Consolas"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Margin="4,0"/>
+                        
+                        <TextBlock Grid.Column="2"
+                                   Text="A"
+                                   Foreground="#F59E0B"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </Grid>
+                
+                <!-- Data Type Selector + Sensor Status -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Data Type 1:"
+                               Foreground="#CCCCCC"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0"/>
+                    
+                    <ComboBox x:Name="cmbDataType"
+                              Width="160"
+                              Style="{DynamicResource ModernComboBox}"
+                              SelectionChanged="CmbDataType_SelectionChanged"
+                              Margin="0,0,20,0">
+                        <ComboBoxItem Content="Position (deg)" IsSelected="True"/>
+                        <ComboBoxItem Content="Velocity (deg/s)"/>
+                        <ComboBoxItem Content="Command Velocity (deg/s)"/>
+                        <ComboBoxItem Content="Current (A)"/>
+                    </ComboBox>
+
+                    <TextBlock Text="Data Type 2:"
+                               Foreground="#CCCCCC"
+                               FontSize="12"
+                               FontWeight="Medium"
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0"/>
+                    
+                    <ComboBox x:Name="cmbDataType2"
+                              Width="160"
+                              Style="{DynamicResource ModernComboBox}"
+                              SelectionChanged="CmbDataType2_SelectionChanged"
+                              Margin="0,0,10,0">
+                        <ComboBoxItem Content="None" IsSelected="True"/>
+                        <ComboBoxItem Content="Position (deg)"/>
+                        <ComboBoxItem Content="Velocity (deg/s)"/>
+                        <ComboBoxItem Content="Command Velocity (deg/s)"/>
+                        <ComboBoxItem Content="Current (A)"/>
+                    </ComboBox>
+                    
+                    <!-- Clear Button -->
+                    <Button x:Name="btnClearPlot"
+                            Content="Clear"
+                            Width="60"
+                            Height="23"
+                            Background="#3A4556"
+                            Foreground="#E5E7EB"
+                            BorderBrush="#4B5563"
+                            BorderThickness="1"
+                            FontSize="11"
+                            FontWeight="Medium"
+                            ToolTip="Clear plot data"
+                            Click="BtnClearPlot_Click"
+                            Margin="0,0,10,0"
+                            Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#4B5563"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#374151"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <!-- Sensor Status Indicators -->
+                    <!-- CCW Sensor -->
+                    <Border x:Name="ccwSensorIndicator"
+                            Width="36"
+                            Height="23"
+                            Background="#6B7280"
+                            CornerRadius="4"
+                            Margin="0,0,6,0"
+                            ToolTip="CCW Sensor Status">
+                        <TextBlock Text="CCW"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    
+                    <!-- CW Sensor -->
+                    <Border x:Name="cwSensorIndicator"
+                            Width="32"
+                            Height="23"
+                            Background="#6B7280"
+                            CornerRadius="4"
+                            ToolTip="CW Sensor Status"
+                            Margin="0,0,2,0">
+                        <TextBlock Text="CW"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+            
+            <!-- ScottPlot Chart -->
+            <Border Grid.Row="1"
+                    Background="#1E1E1E"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" Opacity="0.2" ShadowDepth="1" BlurRadius="4"/>
+                </Border.Effect>
+                <ScottPlot:WpfPlot x:Name="wpfPlot" Margin="8"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

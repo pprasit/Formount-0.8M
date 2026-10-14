@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NARIT Mount API - User Guide</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1e1e1e;
+    --card-alt: #252526;
+    --border: #3f3f46;
+    --accent: #3b82f6;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --text: #e4e4e7;
+    --text-sec: #9ca3af;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .wrapper { display: flex; min-height: 100vh; }
+  nav { width: 280px; background: var(--card); border-right: 1px solid var(--border); padding: 24px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; }
+  main { margin-left: 280px; padding: 40px 56px 80px; max-width: 960px; flex: 1; }
+
+  /* Nav */
+  nav .logo { padding: 0 24px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  nav .logo h2 { font-size: 16px; color: var(--accent); }
+  nav .logo small { color: var(--text-sec); font-size: 11px; }
+  nav ul { list-style: none; }
+  nav ul li a { display: block; padding: 6px 24px; font-size: 13px; color: var(--text-sec); transition: .15s; }
+  nav ul li a:hover { color: #fff; background: rgba(59,130,246,.1); text-decoration: none; }
+  nav .nav-section { padding: 10px 24px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--amber); font-weight: 700; }
+
+  /* Content */
+  h1 { font-size: 28px; margin-bottom: 8px; color: #fff; }
+  h2 { font-size: 22px; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: #fff; }
+  h3 { font-size: 17px; margin: 32px 0 12px; color: var(--accent); }
+  h4 { font-size: 14px; margin: 20px 0 8px; color: var(--amber); }
+  p { margin-bottom: 14px; color: var(--text); }
+  ul, ol { margin: 0 0 16px 24px; }
+  li { margin-bottom: 4px; }
+
+  /* Code */
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; overflow-x: auto; margin: 12px 0 20px; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'Cascadia Code', 'Consolas', monospace; }
+  p code, li code, td code { background: var(--code-bg); border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px; font-size: 12px; color: var(--green); }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: var(--card-alt); text-align: left; padding: 8px 12px; border: 1px solid var(--border); color: var(--accent); font-weight: 600; }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(30,30,30,.4); }
+
+  /* Badges */
+  .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; vertical-align: middle; }
+  .badge-async { background: #7c3aed; color: #fff; }
+  .badge-void { background: #374151; color: var(--text-sec); }
+  .badge-event { background: var(--amber); color: #000; }
+  .badge-model { background: var(--green); color: #000; }
+  .badge-planned { background: var(--red); color: #fff; }
+
+  /* Callout */
+  .callout { border-left: 4px solid; border-radius: 4px; padding: 12px 16px; margin: 16px 0; font-size: 13px; }
+  .callout-info { border-color: var(--accent); background: rgba(59,130,246,.08); }
+  .callout-warn { border-color: var(--amber); background: rgba(245,158,11,.08); }
+  .callout-danger { border-color: var(--red); background: rgba(239,68,68,.08); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, rgba(59,130,246,.15), rgba(124,58,237,.1)); border: 1px solid var(--border); border-radius: 8px; padding: 32px; margin-bottom: 32px; }
+  .hero p { color: var(--text-sec); margin-bottom: 0; }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    nav { display: none; }
+    main { margin-left: 0; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- ======== SIDEBAR NAV ======== -->
+<nav>
+  <div class="logo">
+    <h2>NARIT Mount API</h2>
+    <small>User Guide &mdash; v1.2</small>
+  </div>
+
+  <div class="nav-section">Getting Started</div>
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#quickstart">Quick Start</a></li>
+    <li><a href="#installation">Installation</a></li>
+  </ul>
+
+  <div class="nav-section">Core API</div>
+  <ul>
+    <li><a href="#connection">Connection</a></li>
+    <li><a href="#configuration">Configuration</a></li>
+    <li><a href="#drive-control">Drive Control</a></li>
+    <li><a href="#motion">Motion Commands</a></li>
+    <li><a href="#tracking">Tracking</a></li>
+    <li><a href="#status">Status &amp; Position</a></li>
+  </ul>
+
+  <div class="nav-section">Per-Axis Control</div>
+  <ul>
+    <li><a href="#axis-controller">IAxisController</a></li>
+  </ul>
+
+  <div class="nav-section">Events</div>
+  <ul>
+    <li><a href="#events">Event System</a></li>
+  </ul>
+
+  <div class="nav-section">Data Models</div>
+  <ul>
+    <li><a href="#model-mountstatus">MountStatus</a></li>
+    <li><a href="#model-mountposition">MountPosition</a></li>
+    <li><a href="#model-axisstate">AxisState</a></li>
+    <li><a href="#model-trackinginfo">TrackingInfo</a></li>
+    <li><a href="#model-observersite">ObserverSite</a></li>
+    <li><a href="#model-enums">Enumerations</a></li>
+  </ul>
+
+  <div class="nav-section">Reference</div>
+  <ul>
+    <li><a href="#full-example">Full Example</a></li>
+    <li><a href="#error-handling">Error Handling</a></li>
+    <li><a href="#lifecycle">Lifecycle &amp; Dispose</a></li>
+    <li><a href="#bugfixes">Release Updates (v1.2)</a></li>
+  </ul>
+</nav>
+
+<!-- ======== MAIN CONTENT ======== -->
+<main>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>NARIT Mount API &mdash; User Guide</h1>
+  <p>Complete reference for controlling the NARIT Fork Mount telescope via the <code>NaritMountController</code> C# API. Covers connection, motion, pointing model persistence, offsets, sidereal/satellite/small-body tracking, status polling, and event subscriptions.</p>
+</div>
+
+<!-- ===================== OVERVIEW ===================== -->
+<h2 id="overview">Overview</h2>
+<p>The <strong>NARIT Mount API</strong> (<code>NARIT.Mount.API</code>) is a .NET 10 class library that provides a clean, high-level interface for controlling the NARIT fork-mounted telescope at the Thai National Observatory (Doi Inthanon, 2457 m).</p>
+<p>Key capabilities:</p>
+<ul>
+  <li><strong>Dual-axis control</strong> &mdash; coordinated Azimuth + Altitude commands</li>
+  <li><strong>Manual jogging</strong> &mdash; single-command dual-axis jog workflow for operator control</li>
+  <li><strong>Telescope offset workflow</strong> &mdash; offset type, step size, direction, and reset support</li>
+  <li><strong>Sidereal tracking</strong> &mdash; PIDF controller at 66 Hz with Kalman filtering</li>
+  <li><strong>Satellite tracking</strong> &mdash; TLE / SGP4 propagation</li>
+  <li><strong>Asteroid / comet tracking</strong> &mdash; user-supplied orbital elements for small-body targets</li>
+  <li><strong>Pointing model</strong> &mdash; automatic encoder-to-sky correction</li>
+  <li><strong>Persistent settings</strong> &mdash; pointing model path is restored from <code>AppSetting.json</code></li>
+  <li><strong>NTP time sync</strong> &mdash; sub-millisecond time accuracy</li>
+  <li><strong>Real-time events</strong> &mdash; position updates, tracking state, errors</li>
+</ul>
+
+<!-- ===================== ARCHITECTURE ===================== -->
+<h2 id="architecture">Architecture</h2>
+<pre><code>Your Application
+      |
+      v
++---------------------------+
+| NaritMountController      |  &lt;-- Public API (IMountController)
+|  .AzimuthAxis             |  &lt;-- IAxisController
+|  .AltitudeAxis            |  &lt;-- IAxisController
++---------------------------+
+      |
+      v
++---------------------------+
+| ForkMount-WPF Engine      |  &lt;-- Internal (not exposed)
+|  SiderealTracking (PIDF)  |
+|  SatelliteTracking (SGP4) |
+|  PointingModelManager     |
+|  CentralizedPollingMgr    |
++---------------------------+
+      |
+      v
++---------------------------+
+| Platinum Drive (Elmo)     |  &lt;-- Hardware
++---------------------------+</code></pre>
+
+<!-- ===================== QUICK START ===================== -->
+<h2 id="quickstart">Quick Start</h2>
+<pre><code class="language-csharp">using NARIT.Mount.API;
+using NARIT.Mount.API.Models;
+
+// 1. Create controller
+using var mount = new NaritMountController();
+
+// 2. Configure observer site (required for tracking)
+mount.SetObserverSite(ObserverSite.NARIT_DoiInthanon);
+
+// 3. Connect to hardware
+bool ok = await mount.ConnectAsync();
+if (!ok) return;
+
+// 4. Enable drives
+mount.Enable();
+
+// 5. Track Betelgeuse (RA 5.9195h, Dec +7.4072 deg)
+mount.TrackObject(5.9195, 7.4072, "Betelgeuse");
+
+// 6. Monitor tracking
+var info = mount.GetTrackingInfo();
+Console.WriteLine($"On target: {info.IsOnTarget}  RMS Az: {info.AzimuthRms_Arcsec:F1}\"");
+
+// 7. Stop and cleanup
+mount.StopTracking();
+mount.Disable();
+mount.Disconnect();</code></pre>
+
+<!-- ===================== INSTALLATION ===================== -->
+<h2 id="installation">Installation</h2>
+<ol>
+  <li>Add a project reference to <code>NARIT-Mount-API.csproj</code> in your solution.</li>
+  <li>The API targets <strong>.NET 10 (Windows)</strong> &mdash; your project must also target <code>net10.0-windows</code>.</li>
+  <li>Ensure the Elmo Platinum Drive hardware (or simulator) is accessible via COM port.</li>
+</ol>
+<pre><code class="language-xml">&lt;ProjectReference Include="..\NARIT-Mount-API\NARIT-Mount-API.csproj" /&gt;</code></pre>
+
+<!-- ===================== CONNECTION ===================== -->
+<h2 id="connection">Connection</h2>
+
+<h3>ConnectAsync() <span class="badge badge-async">async</span></h3>
+<p>Scans for available Platinum Drive hardware and connects to the first one found. Creates internal polling manager, tracking engines, and pointing model.</p>
+<pre><code class="language-csharp">bool success = await mount.ConnectAsync();
+if (!success)
+{
+    Console.WriteLine("Connection failed!");
+}</code></pre>
+
+<table>
+  <tr><th>Returns</th><td><code>Task&lt;bool&gt;</code> &mdash; <code>true</code> if connected successfully</td></tr>
+  <tr><th>Throws</th><td><code>ObjectDisposedException</code> if the controller has been disposed</td></tr>
+</table>
+
+<h3>Disconnect() <span class="badge badge-void">void</span></h3>
+<p>Stops tracking, stops polling, disconnects from drive hardware.</p>
+<pre><code class="language-csharp">mount.Disconnect();</code></pre>
+
+<h3>IsConnected</h3>
+<p>Read-only property. <code>true</code> when connected to drive hardware.</p>
+
+<!-- ===================== CONFIGURATION ===================== -->
+<h2 id="configuration">Configuration</h2>
+
+<h3>SetObserverSite(site) <span class="badge badge-void">void</span></h3>
+<p>Sets the observer location for RA/Dec to Az/Alt coordinate conversion. <strong>Required before tracking.</strong></p>
+<pre><code class="language-csharp">// Option 1: Use preset
+mount.SetObserverSite(ObserverSite.NARIT_DoiInthanon);
+
+// Option 2: Custom location
+mount.SetObserverSite(new ObserverSite(
+    latitude:  18.5736,   // degrees North
+    longitude: 98.4820,   // degrees East
+    elevation: 2457,      // meters
+    timezoneUtcOffset: 7  // UTC+7
+));</code></pre>
+
+<h3>SetPointingModelPath(filePath) <span class="badge badge-void">void</span></h3>
+<p>Loads a PointXP pointing model file (<code>.pxp</code> or <code>.pmd</code>) that corrects mechanical/alignment errors.</p>
+<pre><code class="language-csharp">mount.SetPointingModelPath(@"C:\Models\MyMount.pxp");</code></pre>
+<div class="callout callout-info">
+  <strong>Note</strong>
+  Can be called before or after <code>ConnectAsync()</code>. The selected path is now saved to <code>AppSetting.json</code> and restored automatically on the next startup.
+</div>
+
+<h3>SetNtpConfig(config) <span class="badge badge-void">void</span></h3>
+<p>Configures NTP time synchronization for accurate timestamp and sidereal time calculations.</p>
+<pre><code class="language-csharp">// Use Thai NTP server
+mount.SetNtpConfig(NtpConfig.ThaiNtp);
+
+// Or custom
+mount.SetNtpConfig(new NtpConfig("pool.ntp.org", syncIntervalSeconds: 1800));</code></pre>
+
+<h3>GetObserverSite()</h3>
+<p>Returns the current <code>ObserverSite</code> or <code>null</code> if not set.</p>
+
+<!-- ===================== DRIVE CONTROL ===================== -->
+<h2 id="drive-control">Drive Control</h2>
+
+<h3>Enable() <span class="badge badge-void">void</span></h3>
+<p>Enables both axis motors simultaneously. Drives must be enabled before any motion command.</p>
+<pre><code class="language-csharp">mount.Enable();</code></pre>
+
+<h3>Disable() <span class="badge badge-void">void</span></h3>
+<p>Disables both axis motors. Automatically stops any active tracking first.</p>
+<pre><code class="language-csharp">mount.Disable();</code></pre>
+
+<h3>IsMountEnabled</h3>
+<p>Read-only property. <code>true</code> when both drives are enabled. Reads directly from the hardware polling data (<code>AzimuthInfo.Is_Drive_Enabled &amp;&amp; AltitudeInfo.Is_Drive_Enabled</code>) for immediate accuracy.</p>
+
+<!-- ===================== MOTION ===================== -->
+<h2 id="motion">Motion Commands</h2>
+
+<h3>GotoPosition(az, alt, velocity) <span class="badge badge-void">void</span></h3>
+<p>Slews both axes to the specified position at the given velocity. Automatically stops any active tracking.</p>
+<pre><code class="language-csharp">mount.GotoPosition(
+    azimuthDeg: 180.0,
+    altitudeDeg: 45.0,
+    velocityDegPerSec: 5.0
+);</code></pre>
+
+<table>
+  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>azimuthDeg</code></td><td><code>double</code></td><td>Target azimuth in degrees</td></tr>
+  <tr><td><code>altitudeDeg</code></td><td><code>double</code></td><td>Target altitude in degrees</td></tr>
+  <tr><td><code>velocityDegPerSec</code></td><td><code>double</code></td><td>Slew speed in degrees/second</td></tr>
+</table>
+
+<h3>MoveVelocity(azVel, altVel) <span class="badge badge-void">void</span></h3>
+<p>Commands both axes to move at continuous velocities until stopped. Stops tracking first.</p>
+<pre><code class="language-csharp">mount.MoveVelocity(
+    azVelocityDegPerSec: 1.0,
+    altVelocityDegPerSec: 0.5
+);</code></pre>
+
+<h3>Jog(azVel, altVel) <span class="badge badge-void">void</span></h3>
+<p>Jog both axes at specified velocities. Semantically identical to <code>MoveVelocity</code> but intended for manual/interactive control. The API stops active tracking before starting a manual jog command.</p>
+<pre><code class="language-csharp">mount.Jog(0.5, 0.0);  // Jog azimuth at 0.5 deg/s</code></pre>
+
+<h3>ApplyOffset(offsetType, stepSizeArcsec, direction) <span class="badge badge-void">void</span></h3>
+<p>Applies a telescope offset using the same operator flow as the Camera / Offset panel in the main application.</p>
+<pre><code class="language-csharp">mount.ApplyOffset(
+    offsetType: OffsetType.RaDec,
+    stepSizeArcsec: 10,
+    direction: OffsetDirection.NE
+);</code></pre>
+<table>
+  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>offsetType</code></td><td><code>OffsetType</code></td><td>Coordinate mode: <code>RaDec</code> or <code>AltAzm</code></td></tr>
+  <tr><td><code>stepSizeArcsec</code></td><td><code>double</code></td><td>Offset step size in arcseconds</td></tr>
+  <tr><td><code>direction</code></td><td><code>OffsetDirection</code></td><td>One of N, S, E, W, NE, NW, SE, SW</td></tr>
+</table>
+
+<h3>ResetOffset() <span class="badge badge-void">void</span></h3>
+<p>Clears the accumulated telescope offset on both axes.</p>
+<pre><code class="language-csharp">mount.ResetOffset();</code></pre>
+
+<h3>Stop() <span class="badge badge-void">void</span></h3>
+<p>Emergency stop &mdash; halts all motion on both axes and stops tracking.</p>
+<pre><code class="language-csharp">mount.Stop();</code></pre>
+
+<!-- ===================== TRACKING ===================== -->
+<h2 id="tracking">Tracking</h2>
+
+<h3>TrackObject(ra, dec, name) <span class="badge badge-void">void</span></h3>
+<p>Track a celestial object by J2000 RA/Dec coordinates. The engine automatically handles precession, coordinate conversion, and PIDF control at 66 Hz.</p>
+<pre><code class="language-csharp">// Track Betelgeuse
+mount.TrackObject(
+    raHours: 5.9195,       // RA in hours (0-24)
+    decDeg:  7.4072,       // Dec in degrees (-90 to +90)
+    objectName: "Betelgeuse"
+);</code></pre>
+
+<table>
+  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>raHours</code></td><td><code>double</code></td><td>Right Ascension in hours (0&ndash;24)</td></tr>
+  <tr><td><code>decDeg</code></td><td><code>double</code></td><td>Declination in degrees (&minus;90 to +90)</td></tr>
+  <tr><td><code>objectName</code></td><td><code>string</code></td><td>Optional display name</td></tr>
+</table>
+
+<div class="callout callout-warn">
+  <strong>Prerequisite</strong>
+  You must call <code>SetObserverSite()</code> before using any tracking method.
+</div>
+
+<h3>TrackSidereal() <span class="badge badge-void">void</span></h3>
+<p>Start sidereal tracking at the current mount position. Converts the current Az/Alt to RA/Dec and tracks it.</p>
+<pre><code class="language-csharp">mount.TrackSidereal();</code></pre>
+
+<h3>TrackSatellite(tle1, tle2, name) <span class="badge badge-void">void</span></h3>
+<p>Track a satellite using Two-Line Element (TLE) data with SGP4 propagation.</p>
+<pre><code class="language-csharp">string tle1 = "1 25544U 98067A   24001.50000000  .00016717  00000-0  10270-3 0  9002";
+string tle2 = "2 25544  51.6400 208.9163 0006703  30.1579 330.0197 15.49560532999999";
+
+mount.TrackSatellite(tle1, tle2, "ISS (ZARYA)");</code></pre>
+
+<h3>TrackAsteroid(elements) <span class="badge badge-void">void</span></h3>
+<p>Tracks an asteroid using user-supplied orbital elements.</p>
+<pre><code class="language-csharp">mount.TrackAsteroid(new AsteroidOrbitalElements
+{
+    Name = "Ceres",
+    Epoch_JD = 2460400.5,
+    SemiMajorAxis_AU = 2.7675,
+    Eccentricity = 0.0758,
+    Inclination_Deg = 10.593,
+    LongAscendingNode_Deg = 80.305,
+    ArgPerihelion_Deg = 73.597,
+    MeanAnomaly_Deg = 95.989
+});</code></pre>
+
+<h3>TrackComet(elements) <span class="badge badge-void">void</span></h3>
+<p>Tracks a comet using user-supplied orbital elements. The current implementation supports elliptical comet orbits.</p>
+<pre><code class="language-csharp">mount.TrackComet(new CometOrbitalElements
+{
+    Name = "67P/Churyumov-Gerasimenko",
+    PerihelionEpoch_JD = 2460673.5,
+    PerihelionDistance_AU = 1.2432,
+    Eccentricity = 0.6405,
+    Inclination_Deg = 7.040,
+    LongAscendingNode_Deg = 50.181,
+    ArgPerihelion_Deg = 12.780
+});</code></pre>
+
+<h3>TrackNearEarthObject(elements) <span class="badge badge-planned">planned</span></h3>
+<p>Track a Near-Earth Object using Keplerian orbital elements.</p>
+<div class="callout callout-danger">
+  <strong>Not Yet Implemented</strong>
+  This method currently throws <code>NotImplementedException</code>. It requires an ephemeris propagator to be added to the engine.
+</div>
+
+<h3>StopTracking() <span class="badge badge-void">void</span></h3>
+<p>Stops all tracking and halts both axes.</p>
+<pre><code class="language-csharp">mount.StopTracking();</code></pre>
+
+<h3>GetTrackingInfo() <span class="badge badge-model">model</span></h3>
+<p>Returns a <a href="#model-trackinginfo"><code>TrackingInfo</code></a> snapshot of the current tracking session.</p>
+<pre><code class="language-csharp">var info = mount.GetTrackingInfo();
+Console.WriteLine($"Mode: {info.Mode}");
+Console.WriteLine($"Target: RA={info.TargetRA_Hours:F4}h Dec={info.TargetDec_Deg:F4} deg");
+Console.WriteLine($"On target: {info.IsOnTarget}");
+Console.WriteLine($"RMS: Az={info.AzimuthRms_Arcsec:F1}\" Alt={info.AltitudeRms_Arcsec:F1}\"");
+Console.WriteLine($"Duration: {info.Duration}");</code></pre>
+
+<h3>IsTracking</h3>
+<p>Read-only property. <code>true</code> when sidereal or satellite tracking is active.</p>
+
+<!-- ===================== STATUS ===================== -->
+<h2 id="status">Status &amp; Position</h2>
+
+<h3>GetStatus() <span class="badge badge-model">model</span></h3>
+<p>Returns a comprehensive <a href="#model-mountstatus"><code>MountStatus</code></a> snapshot.</p>
+<pre><code class="language-csharp">var status = mount.GetStatus();
+Console.WriteLine($"State: {status.State}");
+Console.WriteLine($"Enabled: {status.IsMountEnabled}");
+Console.WriteLine($"Tracking: {status.IsTracking} ({status.CurrentTrackingMode})");
+Console.WriteLine($"NTP synced: {status.IsTimeSynchronized} (offset {status.NtpOffsetMs:F1}ms)");</code></pre>
+<div class="callout callout-info">
+  <strong>Axis telemetry</strong>
+  <code>MountStatus</code> now includes per-axis <code>Axis_Status</code> values (<code>Disabled</code>, <code>Idle</code>, <code>Slewing</code>, <code>Tracking</code>) and RMS values that automatically return <code>0</code> when the axis is not actively tracking or slewing.
+</div>
+
+<h3>GetPosition() <span class="badge badge-model">model</span></h3>
+<p>Returns a <a href="#model-mountposition"><code>MountPosition</code></a> snapshot with raw and corrected positions.</p>
+<pre><code class="language-csharp">var pos = mount.GetPosition();
+Console.WriteLine($"Az Raw: {pos.Azimuth_Raw_Deg:F4} deg  Corrected: {pos.Azimuth_Corrected_Deg:F4} deg");
+Console.WriteLine($"Alt Raw: {pos.Altitude_Raw_Deg:F4} deg  Corrected: {pos.Altitude_Corrected_Deg:F4} deg");</code></pre>
+
+<!-- ===================== AXIS CONTROLLER ===================== -->
+<h2 id="axis-controller">Per-Axis Control (IAxisController)</h2>
+<p>Access individual axis controllers via <code>mount.AzimuthAxis</code> and <code>mount.AltitudeAxis</code> for independent control.</p>
+
+<table>
+  <tr><th>Method / Property</th><th>Description</th></tr>
+  <tr><td><code>Axis</code></td><td>Which axis: <code>AxisType.Azimuth</code> or <code>AxisType.Altitude</code></td></tr>
+  <tr><td><code>Enable()</code></td><td>Enable drive motor for this axis</td></tr>
+  <tr><td><code>Disable()</code></td><td>Disable drive motor for this axis</td></tr>
+  <tr><td><code>IsEnabled</code></td><td>Whether the drive is currently enabled</td></tr>
+  <tr><td><code>GotoPosition(posDeg, velDeg)</code></td><td>Command a position move on this axis</td></tr>
+  <tr><td><code>MoveVelocity(velDeg)</code></td><td>Command continuous velocity move</td></tr>
+  <tr><td><code>Jog(velDeg)</code></td><td>Jog at specified velocity</td></tr>
+  <tr><td><code>Stop()</code></td><td>Stop motion on this axis</td></tr>
+  <tr><td><code>GetState()</code></td><td>Returns <a href="#model-axisstate"><code>AxisState</code></a> snapshot</td></tr>
+</table>
+
+<pre><code class="language-csharp">// Move only azimuth axis
+mount.AzimuthAxis.GotoPosition(180.0, 3.0);
+
+// Check altitude axis state
+var altState = mount.AltitudeAxis.GetState();
+Console.WriteLine($"Alt position: {altState.RawPosition_Deg:F4} deg");
+Console.WriteLine($"Alt current: {altState.Current_IQ:F3} A");</code></pre>
+
+<!-- ===================== EVENTS ===================== -->
+<h2 id="events">Event System</h2>
+
+<h3>PositionChanged <span class="badge badge-event">event</span></h3>
+<p>Raised at the polling rate (~66 Hz) with the latest position data.</p>
+<pre><code class="language-csharp">mount.PositionChanged += (sender, e) =>
+{
+    Console.WriteLine($"Az: {e.Position.Azimuth_Corrected_Deg:F4} deg  " +
+                      $"Alt: {e.Position.Altitude_Corrected_Deg:F4} deg");
+};</code></pre>
+
+<h3>TrackingStateChanged <span class="badge badge-event">event</span></h3>
+<p>Raised when tracking starts, stops, or changes mode.</p>
+<pre><code class="language-csharp">mount.TrackingStateChanged += (sender, e) =>
+{
+    Console.WriteLine($"Tracking: {e.IsTracking}  Mode: {e.Mode}  Object: {e.ObjectName}");
+};</code></pre>
+
+<h3>ErrorOccurred <span class="badge badge-event">event</span></h3>
+<p>Raised when a mount error occurs.</p>
+<pre><code class="language-csharp">mount.ErrorOccurred += (sender, e) =>
+{
+    Console.WriteLine($"ERROR: {e.Message} (recoverable: {e.IsRecoverable})");
+    if (e.Exception != null)
+        Console.WriteLine($"  Exception: {e.Exception}");
+};</code></pre>
+
+<!-- ===================== DATA MODELS ===================== -->
+<h2 id="model-mountstatus">MountStatus</h2>
+<table>
+  <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>State</code></td><td><code>MountState</code></td><td>Current state (Disconnected, Disabled, Idle, Slewing, Tracking, Stopped, Error)</td></tr>
+  <tr><td><code>IsMountEnabled</code></td><td><code>bool</code></td><td>Both axes are enabled</td></tr>
+  <tr><td><code>IsTracking</code></td><td><code>bool</code></td><td>Actively tracking a target</td></tr>
+  <tr><td><code>IsTimeSynchronized</code></td><td><code>bool</code></td><td>NTP time is synced</td></tr>
+  <tr><td><code>NtpOffsetMs</code></td><td><code>double</code></td><td>NTP offset from local clock (ms)</td></tr>
+  <tr><td><code>SystemUtcTime</code></td><td><code>DateTime</code></td><td>Current UTC time (NTP-synced)</td></tr>
+  <tr><td><code>CurrentTrackingObjectName</code></td><td><code>string</code></td><td>Name of tracked object</td></tr>
+  <tr><td><code>CurrentTrackingMode</code></td><td><code>TrackingModeType</code></td><td>Current tracking mode</td></tr>
+  <tr><td><code>AzimuthAxis</code></td><td><code>AxisState</code></td><td>Azimuth axis state snapshot</td></tr>
+  <tr><td><code>AltitudeAxis</code></td><td><code>AxisState</code></td><td>Altitude axis state snapshot</td></tr>
+  <tr><td><code>Position</code></td><td><code>MountPosition</code></td><td>Current position snapshot</td></tr>
+  <tr><td><code>TelescopeOffset_Az_Arcsec</code></td><td><code>double</code></td><td>Camera alignment offset (Az, arcsec)</td></tr>
+  <tr><td><code>TelescopeOffset_Alt_Arcsec</code></td><td><code>double</code></td><td>Camera alignment offset (Alt, arcsec)</td></tr>
+</table>
+
+<h2 id="model-mountposition">MountPosition</h2>
+<table>
+  <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>Azimuth_Raw_Deg</code></td><td><code>double</code></td><td>Raw encoder azimuth (degrees)</td></tr>
+  <tr><td><code>Altitude_Raw_Deg</code></td><td><code>double</code></td><td>Raw encoder altitude (degrees)</td></tr>
+  <tr><td><code>Azimuth_Corrected_Deg</code></td><td><code>double</code></td><td>Pointing-model corrected azimuth (degrees)</td></tr>
+  <tr><td><code>Altitude_Corrected_Deg</code></td><td><code>double</code></td><td>Pointing-model corrected altitude (degrees)</td></tr>
+  <tr><td><code>Timestamp</code></td><td><code>DateTime</code></td><td>When position was sampled (NTP-synced)</td></tr>
+</table>
+
+<h2 id="model-axisstate">AxisState</h2>
+<table>
+  <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>RawPosition_Counts</code></td><td><code>double</code></td><td>Raw encoder position (counts)</td></tr>
+  <tr><td><code>RawPosition_Deg</code></td><td><code>double</code></td><td>Raw position (degrees)</td></tr>
+  <tr><td><code>FilteredPosition_Counts</code></td><td><code>double</code></td><td>Kalman-filtered position (counts)</td></tr>
+  <tr><td><code>RawVelocity_CountsPerSec</code></td><td><code>double</code></td><td>Raw velocity (counts/sec)</td></tr>
+  <tr><td><code>FilteredVelocity_CountsPerSec</code></td><td><code>double</code></td><td>Kalman-filtered velocity (counts/sec)</td></tr>
+  <tr><td><code>CommandVelocity_DegPerSec</code></td><td><code>double</code></td><td>Current command velocity (deg/sec)</td></tr>
+  <tr><td><code>Current_IQ</code></td><td><code>double</code></td><td>Motor current (amps)</td></tr>
+  <tr><td><code>IsDriveEnabled</code></td><td><code>bool</code></td><td>Drive motor enabled</td></tr>
+  <tr><td><code>CCW_Sensor_Active</code></td><td><code>bool</code></td><td>CCW limit sensor triggered</td></tr>
+  <tr><td><code>CW_Sensor_Active</code></td><td><code>bool</code></td><td>CW limit sensor triggered</td></tr>
+  <tr><td><code>IsTracking</code></td><td><code>bool</code></td><td>Tracking within RMS threshold</td></tr>
+  <tr><td><code>TrackingRmsError_Arcsec</code></td><td><code>double</code></td><td>Current tracking RMS error (arcsec)</td></tr>
+  <tr><td><code>TrackingSampleCount</code></td><td><code>int</code></td><td>Samples used for RMS calculation</td></tr>
+  <tr><td><code>Timestamp</code></td><td><code>DateTime</code></td><td>Last position update time</td></tr>
+</table>
+
+<h2 id="model-trackinginfo">TrackingInfo</h2>
+<table>
+  <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>Mode</code></td><td><code>TrackingModeType</code></td><td>Current tracking mode</td></tr>
+  <tr><td><code>TargetRA_Hours</code></td><td><code>double</code></td><td>Target RA in hours (0&ndash;24)</td></tr>
+  <tr><td><code>TargetDec_Deg</code></td><td><code>double</code></td><td>Target Dec in degrees</td></tr>
+  <tr><td><code>TargetAzimuth_Deg</code></td><td><code>double</code></td><td>Computed target azimuth</td></tr>
+  <tr><td><code>TargetAltitude_Deg</code></td><td><code>double</code></td><td>Computed target altitude</td></tr>
+  <tr><td><code>AzimuthRms_Arcsec</code></td><td><code>double</code></td><td>Az tracking RMS error (arcsec)</td></tr>
+  <tr><td><code>AltitudeRms_Arcsec</code></td><td><code>double</code></td><td>Alt tracking RMS error (arcsec)</td></tr>
+  <tr><td><code>IsOnTarget</code></td><td><code>bool</code></td><td>Within tracking sensitivity</td></tr>
+  <tr><td><code>Duration</code></td><td><code>TimeSpan</code></td><td>Time since tracking started</td></tr>
+  <tr><td><code>LocalSiderealTime_Hours</code></td><td><code>double</code></td><td>Current LST in hours</td></tr>
+  <tr><td><code>ObjectName</code></td><td><code>string</code></td><td>Name of tracked object</td></tr>
+</table>
+
+<h2 id="model-observersite">ObserverSite</h2>
+<table>
+  <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>Latitude</code></td><td><code>double</code></td><td>Degrees (&minus;90 to +90, North positive)</td></tr>
+  <tr><td><code>Longitude</code></td><td><code>double</code></td><td>Degrees (&minus;180 to +180, East positive)</td></tr>
+  <tr><td><code>Elevation</code></td><td><code>double</code></td><td>Meters above sea level</td></tr>
+  <tr><td><code>TimezoneUtcOffset</code></td><td><code>double</code></td><td>UTC offset in hours (e.g., +7 for Thailand)</td></tr>
+</table>
+<h4>Presets</h4>
+<table>
+  <tr><th>Static Property</th><th>Location</th></tr>
+  <tr><td><code>ObserverSite.NARIT_DoiInthanon</code></td><td>Lat 18.5736, Lon 98.4820, Elev 2457 m, UTC+7</td></tr>
+</table>
+
+<h2 id="model-enums">Enumerations</h2>
+
+<h4>MountState</h4>
+<table>
+  <tr><th>Value</th><th>Description</th></tr>
+  <tr><td><code>Disconnected</code></td><td>Not connected to hardware</td></tr>
+  <tr><td><code>Disabled</code></td><td>Connected, drives disabled</td></tr>
+  <tr><td><code>Idle</code></td><td>Drives enabled, no motion</td></tr>
+  <tr><td><code>Slewing</code></td><td>Moving to target position</td></tr>
+  <tr><td><code>Tracking</code></td><td>Actively tracking</td></tr>
+  <tr><td><code>Stopped</code></td><td>Emergency stop active</td></tr>
+  <tr><td><code>Error</code></td><td>Error condition</td></tr>
+</table>
+
+<h4>TrackingModeType</h4>
+<table>
+  <tr><th>Value</th><th>Description</th></tr>
+  <tr><td><code>None</code></td><td>No tracking active</td></tr>
+  <tr><td><code>Sidereal</code></td><td>Stars, galaxies, DSO (15.041 arcsec/sec)</td></tr>
+  <tr><td><code>Satellite</code></td><td>Satellite via TLE/SGP4</td></tr>
+  <tr><td><code>Lunar</code></td><td>Lunar tracking</td></tr>
+  <tr><td><code>Solar</code></td><td>Solar tracking</td></tr>
+  <tr><td><code>NearEarthObject</code></td><td>NEO via orbital elements (planned)</td></tr>
+</table>
+
+<h4>AxisType</h4>
+<table>
+  <tr><th>Value</th><th>Description</th></tr>
+  <tr><td><code>Azimuth</code></td><td>Azimuth axis</td></tr>
+  <tr><td><code>Altitude</code></td><td>Altitude axis</td></tr>
+</table>
+
+<!-- ===================== FULL EXAMPLE ===================== -->
+<h2 id="full-example">Full Example</h2>
+<pre><code class="language-csharp">using NARIT.Mount.API;
+using NARIT.Mount.API.Models;
+
+class Program
+{
+    static async Task Main()
+    {
+        using var mount = new NaritMountController();
+
+        // Subscribe to events
+        mount.PositionChanged += (s, e) =&gt;
+        {
+            // Called ~66Hz &mdash; update UI or log
+        };
+
+        mount.TrackingStateChanged += (s, e) =&gt;
+        {
+            Console.WriteLine($"[TRACKING] {e.Mode} &mdash; {e.ObjectName} (active: {e.IsTracking})");
+        };
+
+        mount.ErrorOccurred += (s, e) =&gt;
+        {
+            Console.WriteLine($"[ERROR] {e.Message}");
+        };
+
+        // Configure
+        mount.SetObserverSite(ObserverSite.NARIT_DoiInthanon);
+        mount.SetNtpConfig(NtpConfig.ThaiNtp);
+        mount.SetPointingModelPath(@"C:\Models\ForkMount.pxp");
+
+        // Connect
+        if (!await mount.ConnectAsync())
+        {
+            Console.WriteLine("Failed to connect!");
+            return;
+        }
+
+        Console.WriteLine("Connected! Enabling drives...");
+        mount.Enable();
+
+        // Slew to park position
+        Console.WriteLine("Slewing to park...");
+        mount.GotoPosition(0, 90, 5.0);
+        await Task.Delay(10000);
+
+        // Track Betelgeuse
+        Console.WriteLine("Tracking Betelgeuse...");
+        mount.TrackObject(5.9195, 7.4072, "Betelgeuse");
+
+        // Monitor for 60 seconds
+        for (int i = 0; i &lt; 60; i++)
+        {
+            await Task.Delay(1000);
+            var info = mount.GetTrackingInfo();
+            var pos  = mount.GetPosition();
+
+            Console.WriteLine(
+                $"[{i + 1}s] On target: {info.IsOnTarget}  " +
+                $"RMS: Az={info.AzimuthRms_Arcsec:F1}\" Alt={info.AltitudeRms_Arcsec:F1}\"  " +
+                $"Az={pos.Azimuth_Corrected_Deg:F4} deg  Alt={pos.Altitude_Corrected_Deg:F4} deg");
+        }
+
+        // Cleanup
+        mount.StopTracking();
+        mount.Disable();
+        mount.Disconnect();
+
+        Console.WriteLine("Done!");
+    }
+}</code></pre>
+
+<!-- ===================== ERROR HANDLING ===================== -->
+<h2 id="error-handling">Error Handling</h2>
+<p>The API throws standard .NET exceptions:</p>
+<table>
+  <tr><th>Exception</th><th>When</th></tr>
+  <tr><td><code>InvalidOperationException</code></td><td>Method called when not connected</td></tr>
+  <tr><td><code>InvalidOperationException</code></td><td>Tracking method called without observer site</td></tr>
+  <tr><td><code>ObjectDisposedException</code></td><td>Method called after <code>Dispose()</code></td></tr>
+  <tr><td><code>ArgumentOutOfRangeException</code></td><td>RA not in 0&ndash;24 or Dec not in &plusmn;90</td></tr>
+  <tr><td><code>ArgumentNullException</code></td><td>Required parameter is null</td></tr>
+  <tr><td><code>FileNotFoundException</code></td><td>Pointing model file not found</td></tr>
+  <tr><td><code>NotImplementedException</code></td><td><code>TrackNearEarthObject()</code> (planned feature)</td></tr>
+</table>
+
+<div class="callout callout-info">
+  <strong>ErrorOccurred Event</strong>
+  Non-throwing errors (e.g., hardware communication issues) are reported via the <code>ErrorOccurred</code> event instead of exceptions.
+</div>
+
+<!-- ===================== LIFECYCLE ===================== -->
+<h2 id="lifecycle">Lifecycle &amp; Dispose</h2>
+<p><code>NaritMountController</code> implements <code>IDisposable</code>. Always dispose when done:</p>
+<pre><code class="language-csharp">// Option 1: using statement (recommended)
+using var mount = new NaritMountController();
+
+// Option 2: manual dispose
+var mount = new NaritMountController();
+try
+{
+    // ... use mount ...
+}
+finally
+{
+    mount.Dispose();
+}</code></pre>
+
+<p>The recommended lifecycle order:</p>
+<ol>
+  <li><code>new NaritMountController()</code></li>
+  <li><code>SetObserverSite()</code></li>
+  <li><code>SetPointingModelPath()</code> <em>(optional)</em></li>
+  <li><code>SetNtpConfig()</code> <em>(optional)</em></li>
+  <li><code>await ConnectAsync()</code></li>
+  <li><code>Enable()</code></li>
+  <li>Motion / Tracking commands</li>
+  <li><code>StopTracking()</code></li>
+  <li><code>Disable()</code></li>
+  <li><code>Disconnect()</code></li>
+  <li><code>Dispose()</code></li>
+</ol>
+
+<hr style="margin:48px 0 24px; border-color: var(--border);">
+
+<!-- ===================== KNOWN ISSUES & BUG FIXES ===================== -->
+<h2 id="bugfixes">Release Updates &amp; Notes (v1.2)</h2>
+
+<h3>New: Operator Control Expansion</h3>
+<ul>
+  <li><strong>Dual-axis Jog</strong> now behaves as a single mount-level command intended for operator control.</li>
+  <li><strong>Offset commands</strong> are available through <code>ApplyOffset()</code> and <code>ResetOffset()</code>.</li>
+  <li><strong>Pointing model path</strong> is persisted and restored automatically from <code>AppSetting.json</code>.</li>
+  <li><strong>Asteroid and comet tracking</strong> are now available from orbital elements supplied by the caller.</li>
+  <li><strong>Axis status reporting</strong> exposes <code>Disabled</code>, <code>Idle</code>, <code>Slewing</code>, and <code>Tracking</code> at the API surface.</li>
+</ul>
+
+<h3>Fix: Enable/Disable Status Not Updating</h3>
+<div class="callout callout-danger">
+  <strong>Problem</strong>
+  After calling <code>mount.Enable()</code> or <code>mount.Disable()</code>, the <code>IsMountEnabled</code> property and <code>GetStatus().State</code> did not reflect the actual drive state. The status remained stuck on <code>Disabled</code>.
+</div>
+<h4>Root Cause</h4>
+<p>The internal <code>MountManager</code> (which calculates <code>IsMountEnabled</code> at 200 Hz) reads drive status from the global <code>App.PollingManager</code> singleton. However, <code>ConnectAsync()</code> created a new <code>CentralizedPollingManager</code> without registering it with <code>App.PollingManager</code>, so <code>MountManager</code> was reading <code>null</code> &mdash; the enable status was never propagated.</p>
+<h4>Fix Applied</h4>
+<ul>
+  <li><code>ConnectAsync()</code> now sets <code>App.PollingManager = _pollingManager</code> after creation, ensuring all internal managers read from the correct data source.</li>
+  <li><code>Disconnect()</code> now clears <code>App.PollingManager</code> to prevent stale references.</li>
+  <li><code>IsMountEnabled</code> now reads directly from <code>AzimuthInfo.Is_Drive_Enabled &amp;&amp; AltitudeInfo.Is_Drive_Enabled</code> instead of relying on the asynchronous <code>MountManager</code> update cycle, making it immediately accurate.</li>
+</ul>
+
+<h3>Fix: TrackObject Spinning Forever</h3>
+<div class="callout callout-danger">
+  <strong>Problem</strong>
+  Calling <code>mount.TrackObject(ra, dec, name)</code> caused the mount to spin at maximum velocity indefinitely instead of converging on the target.
+</div>
+<h4>Root Cause</h4>
+<p>Same root cause as the Enable/Disable issue. The <code>SiderealTracking</code> PIDF controller reads the current mount position from <code>MountInfo.Act_Azimuth_Pos_Correct</code> / <code>Act_Altitude_Pos_Correct</code>, which are calculated by <code>MountManager</code>. Because <code>App.PollingManager</code> was <code>null</code>, corrected positions were never computed and remained at <code>0°</code>. The PIDF controller saw an enormous error (target &minus; 0°) and commanded maximum velocity continuously.</p>
+<h4>Fix Applied</h4>
+<p>Registering <code>App.PollingManager</code> in <code>ConnectAsync()</code> resolved this automatically. <code>MountManager</code> now correctly computes corrected positions, and the PIDF controller converges to the target as designed.</p>
+
+<h3>Fix: SatelliteTracking NullReferenceException</h3>
+<div class="callout callout-danger">
+  <strong>Problem</strong>
+  During satellite tracking, calling <code>StopTracking()</code> occasionally caused a <code>System.NullReferenceException</code> crash inside the tracking computation loop (<code>ComputeAndSendCommands</code>).
+</div>
+<h4>Root Cause</h4>
+<p>A <strong>race condition</strong> between the 15 ms timer thread and the <code>StopTracking()</code> call on the UI thread. The tracking timer checks <code>_satelliteTracker != null</code> at the start of the method, but <code>StopTracking()</code> sets <code>_satelliteTracker = null</code> on another thread <em>between</em> the null-check and the subsequent use of the field (e.g., <code>_satelliteTracker.GetTopocentric(...)</code>), causing the crash.</p>
+<h4>Fix Applied</h4>
+<p>Both <code>TrackingTimer_Elapsed()</code> and <code>ComputeAndSendCommands()</code> now capture local snapshots of <code>_satelliteTracker</code> and <code>_observerLocation</code> at the very start of the method. The local references remain valid for the entire method execution regardless of whether <code>StopTracking()</code> nullifies the fields on another thread.</p>
+<pre><code class="language-csharp">// Inside ComputeAndSendCommands():
+var tracker = _satelliteTracker;    // local snapshot
+var observer = _observerLocation;   // local snapshot
+
+if (!_isTracking || tracker == null || observer == null)
+    return;
+
+// Safe to use tracker and observer throughout the method
+var topoCurrent = tracker.GetTopocentric(observer, utcNow);  // no crash
+var topoFuture  = tracker.GetTopocentric(observer, ...);     // no crash</code></pre>
+
+<h3>Thread Safety Notes</h3>
+<div class="callout callout-warn">
+  <strong>Important</strong>
+  The <code>NaritMountController</code> is designed for single-threaded use from the calling application. Internally, tracking engines run on background timer threads. When calling <code>StopTracking()</code> or <code>Disconnect()</code>, the API safely handles concurrent access to shared state. However, users should avoid calling multiple API methods simultaneously from different threads.
+</div>
+
+<hr style="margin:48px 0 24px; border-color: var(--border);">
+<p style="text-align:center; color: var(--text-sec); font-size:12px;">
+  NARIT Mount API User Guide &mdash; Generated for NARIT Fork Mount Telescope<br>
+  National Astronomical Research Institute of Thailand (NARIT)
+</p>
+
+</main>
+</div>
+</body>
+</html>

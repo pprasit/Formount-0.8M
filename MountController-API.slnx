@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="CCD_FLI/CCD_FLI.csproj" Id="91b4e42d-b487-4cbb-b85d-1fc31848b1e8" />
+  <Project Path="CCD_TEST/CCD_TEST.csproj" Id="3fd7c79f-6a52-4408-83b0-c7d0da2f1b66" />
+  <Project Path="NARIT-Collimation-Manager/NARIT-Collimation-Manager.csproj" />
+  <Project Path="NARIT-Mount-API-Tester/NARIT-Mount-API-Tester.csproj" />
+  <Project Path="NARIT-Mount-API/NARIT-Mount-API.csproj" />
+  <Project Path="Narit-Mount-Lib/Narit-Mount-Lib.csproj" />
+</Solution>

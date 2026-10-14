@@ -1,0 +1,996 @@
+﻿<UserControl x:Class="ForkMount_WPF.UI.Azimuth_Controller"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ForkMount_WPF.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1700"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <!-- Color Resources -->
+        <SolidColorBrush x:Key="DarkBackground" Color="#0F1419"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#1A1F2E"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#2D3748"/>
+        <SolidColorBrush x:Key="PrimaryAccent" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#10B981"/>
+        <SolidColorBrush x:Key="ErrorRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="WarningOrange" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#9CA3AF"/>
+
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryAccent}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,6"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#60A5FA"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#374151"/>
+                    <Setter Property="Foreground" Value="#6B7280"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TabItem Style -->
+        <Style x:Key="ModernTabItem" TargetType="TabItem">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border"
+                                Background="Transparent"
+                                BorderThickness="0,0,0,2"
+                                BorderBrush="Transparent"
+                                Padding="14,8"
+                                Margin="0,0,6,0"
+                                Cursor="Hand">
+                            <ContentPresenter ContentSource="Header"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PrimaryAccent}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ScrollBar Style -->
+        <Style x:Key="ModernScrollBar" TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4"/>
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb Background="#4B5563" 
+                                           BorderThickness="0">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Margin="1"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PART_Track" Property="Thumb.Background" Value="#6B7280"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ScrollViewer Style -->
+        <Style x:Key="ModernScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ScrollContentPresenter Grid.Column="0"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                       Grid.Column="1"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                       Style="{StaticResource ModernScrollBar}"
+                                       Margin="4,0,0,0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.8*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel: Tab Control (existing content) -->
+        <TabControl Grid.Column="0"
+                    Background="{StaticResource CardBackground}"
+                    BorderThickness="0"
+                    Margin="0,0,10,0">
+
+            <!-- Tab 1: Drive Connection -->
+            <TabItem Style="{StaticResource ModernTabItem}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Drive Connection"/>
+                        <Ellipse x:Name="tabConnectionIndicator"
+                                Width="8" Height="8"
+                                Fill="{StaticResource ErrorRed}"
+                                Margin="8,0,0,0"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Serial Number -->
+                    <TextBlock Grid.Row="0" Text="Drive SN Number" 
+                               VerticalAlignment="Center" 
+                               Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtDriveSN"
+                             Grid.Row="0" Grid.Column="1"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,12,10"/>
+                    <Button x:Name="btnConnect" 
+                            Grid.Row="0" Grid.Column="2" 
+                            Content="Connect"
+                            Style="{StaticResource ModernButton}"
+                            Click="BtnConnect_Click"
+                            Margin="0,0,0,10"/>
+
+                    <!-- Status -->
+                    <TextBlock Grid.Row="1" Text="Status" 
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,12,8"/>
+                    <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                            Background="#1F2937"
+                            CornerRadius="5"
+                            Height="26"
+                            Padding="10,0"
+                            Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse x:Name="statusIndicator"
+                                    Width="7" Height="7"
+                                    Fill="{StaticResource ErrorRed}"
+                                    Margin="0,0,6,0"/>
+                            <TextBlock x:Name="txtConnectionStatus" 
+                                       Text="Disconnected"
+                                       FontSize="11"
+                                       Foreground="{StaticResource TextPrimary}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- COM Port -->
+                    <TextBlock Grid.Row="2" Text="COM Port" 
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtComPort" 
+                             Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                             Text="-"
+                             IsReadOnly="True"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,0,10"/>
+
+                    <!-- Baud Rate -->
+                    <TextBlock Grid.Row="3" Text="Baud Rate" 
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,12,10"/>
+                    <ComboBox x:Name="cmbBaudRate" 
+                              Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                              Style="{DynamicResource ModernComboBox}"
+                              SelectedIndex="7"
+                              Margin="0,0,0,10">
+                        <ComboBoxItem Content="9600"/>
+                        <ComboBoxItem Content="19200"/>
+                        <ComboBoxItem Content="38400"/>
+                        <ComboBoxItem Content="57600"/>
+                        <ComboBoxItem Content="115200"/>
+                        <ComboBoxItem Content="230400"/>
+                        <ComboBoxItem Content="460800"/>
+                        <ComboBoxItem Content="921600"/>
+                    </ComboBox>
+
+                    <!-- Polling Interval -->
+                    <TextBlock Grid.Row="4" Text="Polling Interval" 
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtPollingInterval" 
+                             Grid.Row="4" Grid.Column="1"
+                             Text="5"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,12,10"/>
+                    <TextBlock Grid.Row="4" Grid.Column="2"
+                               Text="ms"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource TextSecondary}"
+                               Margin="0,0,0,10"/>
+
+                    <!-- Save Button -->
+                    <Button x:Name="btnSaveSettings" 
+                            Grid.Row="6" Grid.ColumnSpan="3"
+                            Content="Save Settings &amp; Apply"
+                            Style="{StaticResource ModernButton}"
+                            Click="BtnSaveSettings_Click"
+                            Margin="0,16,0,0"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Tab 2: Config -->
+            <TabItem Header="Config" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                              Style="{StaticResource ModernScrollViewer}"
+                              Margin="20">
+                    <StackPanel>
+                        <!-- Axis Configuration -->
+                        <TextBlock Text="Axis Configuration"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,12"/>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/> <!-- Limit Warning Distance -->
+                                <RowDefinition Height="Auto"/> <!-- Tracking Sensitivity -->
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Position Offset"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtPositionOffset" Grid.Row="0" Grid.Column="1"
+                                     Text="0.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="deg"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="1" Text="CCW Limit"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtCCWLimit" Grid.Row="1" Grid.Column="1"
+                                     Text="-300.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="deg"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="2" Text="CW Limit"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtCWLimit" Grid.Row="2" Grid.Column="1"
+                                     Text="300.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="deg"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="3" Text="Encoder Resolution"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtEncoderResolution" Grid.Row="3" Grid.Column="1"
+                                      Text="-" Style="{StaticResource ModernTextBox}"
+                                      IsReadOnly="True"
+                                      Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="ticks"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="4" Text="Max Velocity"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtMaxVelocity" Grid.Row="4" Grid.Column="1"
+                                     Text="500.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="4" Grid.Column="2" Text="deg/s"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Acceleration -->
+                            <TextBlock Grid.Row="5" Text="Acceleration"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtAcceleration" Grid.Row="5" Grid.Column="1"
+                                     Text="100.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="5" Grid.Column="2" Text="deg/s²"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Deceleration -->
+                            <TextBlock Grid.Row="6" Text="Deceleration"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtDeceleration" Grid.Row="6" Grid.Column="1"
+                                     Text="100.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="6" Grid.Column="2" Text="deg/s²"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Stop Deceleration -->
+                            <TextBlock Grid.Row="7" Text="Stop Deceleration"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtStopDeceleration" Grid.Row="7" Grid.Column="1"
+                                     Text="200.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="7" Grid.Column="2" Text="deg/s²"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Smooth Factor -->
+                            <TextBlock Grid.Row="8" Text="Smooth Factor"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtSmooth" Grid.Row="8" Grid.Column="1"
+                                     Text="10.0" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="8" Grid.Column="2" Text="ms"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Limit Warning Distance -->
+                            <TextBlock Grid.Row="9" Text="Limit Warning Distance"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBox x:Name="txtLimitWarningDistance" Grid.Row="9" Grid.Column="1"
+                                     Text="0.5" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,10"/>
+                            <TextBlock Grid.Row="9" Grid.Column="2" Text="deg"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                            <!-- Tracking Sensitivity -->
+                            <TextBlock Grid.Row="10" Text="Tracking Sensitivity"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtTrackingSensitivity" Grid.Row="10" Grid.Column="1"
+                                     Text="0.1" Style="{StaticResource ModernTextBox}"
+                                     Margin="0,0,8,0"/>
+                            <TextBlock Grid.Row="10" Grid.Column="2" Text="deg"
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <!-- Hidden fields for completeness -->
+                        <TextBox x:Name="txtMaxControlVelocity" Visibility="Collapsed" Text="100.0"/>
+                        <TextBox x:Name="txtMaxAcceleration" Visibility="Collapsed" Text="200.0"/>
+                        <TextBox x:Name="txtCurrentLimit" Visibility="Collapsed" Text="10.0"/>
+                        <TextBox x:Name="txtTimeDuration" Visibility="Collapsed" Text="1000.0"/>
+                        <TextBox x:Name="txtVelocityGain" Visibility="Collapsed" Text="3.73356E-05"/>
+                        <TextBox x:Name="txtVelocityIntegral" Visibility="Collapsed" Text="0.7619"/>
+                        <TextBox x:Name="txtPositionGain" Visibility="Collapsed" Text="486.2025"/>
+                        <TextBox x:Name="txtAccFeedForward" Visibility="Collapsed" Text="0.0"/>
+                        <TextBox x:Name="txtVelFeedForward" Visibility="Collapsed" Text="1.0"/>
+                        <TextBox x:Name="txtVelocityGainStep" Visibility="Collapsed" Text="1.1E-06"/>
+                        <TextBox x:Name="txtVelocityIntegralStep" Visibility="Collapsed" Text="0.001"/>
+                        <TextBox x:Name="txtPositionGainStep" Visibility="Collapsed" Text="1.0"/>
+                        <TextBox x:Name="txtAccFeedForwardStep" Visibility="Collapsed" Text="1.0E-06"/>
+                        <TextBox x:Name="txtVelFeedForwardStep" Visibility="Collapsed" Text="0.1"/>
+
+                        <Button x:Name="btnSaveAxisConfig" 
+                                Content="Save Configuration"
+                                Style="{StaticResource ModernButton}"
+                                Click="BtnSaveAxisConfig_Click"
+                                Margin="0,20,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Tab 3: Drive Status -->
+            <TabItem Header="Drive Status" Style="{StaticResource ModernTabItem}">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Raw Position -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Raw Position:"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtPosition" 
+                             Grid.Row="0" Grid.Column="1"
+                             Text="-" IsReadOnly="True"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,8,10"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" 
+                               Text="counts"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,8,10"/>
+                    <TextBox x:Name="txtPositionDeg" 
+                             Grid.Row="0" Grid.Column="3"
+                             Text="-" IsReadOnly="True"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,8,10"/>
+                    <TextBlock Grid.Row="0" Grid.Column="4" 
+                               Text="deg"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Corrected Position:"
+                           Foreground="{StaticResource TextSecondary}"
+                           VerticalAlignment="Center" Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtCorrectedPosition" 
+                         Grid.Row="1" Grid.Column="3"
+                         Text="-" IsReadOnly="True"
+                         Style="{StaticResource ModernTextBox}"
+                         Margin="0,0,8,10"/>
+                    <TextBlock Grid.Row="1" Grid.Column="4" 
+                       Text="deg"
+                       Foreground="{StaticResource TextSecondary}"
+                       VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Raw Velocity -->
+                    <TextBlock Grid.Row="4" Grid.Column="0"
+                               Text="Raw Velocity:"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtVelocity" 
+                             Grid.Row="4" Grid.Column="1"
+                             Text="-" IsReadOnly="True"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,8,10"/>
+                    <TextBlock Grid.Row="4" Grid.Column="2" 
+                               Text="cnt/s"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,8,10"/>
+                    <TextBox x:Name="txtVelocityDeg" 
+                             Grid.Row="4" Grid.Column="3"
+                             Text="-" IsReadOnly="True"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,8,10"/>
+                    <TextBlock Grid.Row="4" Grid.Column="4" 
+                               Text="deg/s"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Current IQ -->
+                    <TextBlock Grid.Row="5" Grid.Column="0"
+                               Text="Current (IQ):"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,12,10"/>
+                    <TextBox x:Name="txtCurrentIQ" 
+                             Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4"
+                             Text="-" IsReadOnly="True"
+                             Style="{StaticResource ModernTextBox}"
+                             Margin="0,0,0,10"/>
+
+                    <!-- Drive Status -->
+                    <TextBlock Grid.Row="6" Grid.Column="0"
+                               Text="Drive Status:"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,12,8"/>
+                    <Border Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="4"
+                            Background="#1F2937" CornerRadius="5"
+                            Height="26" Padding="10,0"
+                            Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse x:Name="driveStatusIndicator"
+                                    Width="7" Height="7"
+                                    Fill="{StaticResource ErrorRed}"
+                                    Margin="0,0,6,0"/>
+                            <TextBlock x:Name="txtDriveStatus" 
+                                       Text="Disabled"
+                                       FontSize="11"
+                                       Foreground="{StaticResource TextPrimary}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- CCW Sensor -->
+                    <TextBlock Grid.Row="7" Grid.Column="0"
+                               Text="CCW Sensor:"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center" Margin="0,0,12,8"/>
+                    <Border Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="4"
+                            Background="#1F2937" CornerRadius="5"
+                            Height="26" Padding="10,0"
+                            Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse x:Name="ccwSensorIndicator"
+                                    Width="7" Height="7"
+                                    Fill="#6B7280"
+                                    Margin="0,0,6,0"/>
+                            <TextBlock x:Name="txtCCWSensor" 
+                                       Text="Inactive"
+                                       FontSize="11"
+                                       Foreground="{StaticResource TextPrimary}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- CW Sensor -->
+                    <TextBlock Grid.Row="8" Grid.Column="0"
+                               Text="CW Sensor:"
+                               Foreground="{StaticResource TextSecondary}"
+                               VerticalAlignment="Center"/>
+                    <Border Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4"
+                            Background="#1F2937" CornerRadius="5"
+                            Height="26" Padding="10,0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse x:Name="cwSensorIndicator"
+                                    Width="7" Height="7"
+                                    Fill="#6B7280"
+                                    Margin="0,0,6,0"/>
+                            <TextBlock x:Name="txtCWSensor" 
+                                       Text="Inactive"
+                                       FontSize="11"
+                                       Foreground="{StaticResource TextPrimary}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- Tab 4: Controller -->
+            <TabItem Header="Controller" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                              Style="{StaticResource ModernScrollViewer}"
+                              Margin="20">
+                    <StackPanel>
+                        <!-- Position Control Section -->
+                        <Border Background="{StaticResource CardBackground}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="16"
+                                Margin="0,0,0,12">
+                            <StackPanel>
+                                <!-- Header with Settings Icon -->
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0"
+                                            Background="{StaticResource PrimaryAccent}"
+                                            Width="3"
+                                            Height="20"
+                                            CornerRadius="2"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,10,0"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               Text="Position Control"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+
+                                    <Button Grid.Column="2"
+                                        Click="BtnPositionControlSettings_Click"
+                                        Width="28"
+                                        Height="28"
+                                        Padding="0"
+                                        ToolTip="Control Parameters"
+                                        Cursor="Hand">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="5"
+                                                Padding="5">
+                                                                <Path Data="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+                                                  Fill="{StaticResource TextSecondary}"
+                                                  Stretch="Uniform"/>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#374151"/>
+                                                                </Trigger>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter Property="Background" Value="#4B5563"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Drive Control Label + Enable Button -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="Drive Control"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"/>
+
+                                    <Button x:Name="btnToggleDrive"
+                                            Grid.Column="1"
+                                            Content="Enable Drive"
+                                            Height="32"
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Click="BtnToggleDrive_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource ModernButton}">
+                                                <Setter Property="Background" Value="{StaticResource SuccessGreen}"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#059669"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Target Position #1, #2 -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="50"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="Target Pos #1, #2"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"/>
+
+                                    <TextBox x:Name="txtTargetPosition1"
+                                             Grid.Column="1"
+                                             Text="0.0"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,3,0"/>
+
+                                    <TextBox x:Name="txtTargetPosition2"
+                                             Grid.Column="2"
+                                             Text="10.0"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="3,0,3,0"/>
+
+                                    <Button x:Name="btnMoveToPosition1"
+                                            Grid.Column="3"
+                                            Content="#1"
+                                            Style="{StaticResource ModernButton}"
+                                            Click="BtnMoveToPosition1_Click"
+                                            Margin="3,0,3,0"/>
+
+                                    <Button x:Name="btnMoveToPosition2"
+                                            Grid.Column="4"
+                                            Content="#2"
+                                            Style="{StaticResource ModernButton}"
+                                            Click="BtnMoveToPosition2_Click"
+                                            Margin="3,0,3,0"/>
+
+                                    <TextBlock Grid.Column="5"
+                                               Text="deg"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11"/>
+                                </Grid>
+
+                                <!-- Velocity -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="50"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="Velocity"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"/>
+
+                                    <TextBox x:Name="txtMoveVelocity"
+                                             Grid.Column="1"
+                                             Text="1.0"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,6,0"/>
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="deg/s"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11"/>
+                                </Grid>
+
+                                <!-- Move to Position #1 Button -->
+                                <Button x:Name="btnMoveToPosition"
+                                        Content="Move to Position #1"
+                                        Height="32"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Style="{StaticResource ModernButton}"
+                                        Click="BtnMoveToPosition_Click"
+                                        Margin="0,0,0,10"/>
+
+                                <!-- Stop Motion Button -->
+                                <Button x:Name="btnStopMotion"
+                                        Content="Stop Motion"
+                                        Height="32"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Click="BtnStopMotion_Click">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ModernButton}">
+                                            <Setter Property="Background" Value="{StaticResource ErrorRed}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#DC2626"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Velocity Control Section -->
+                        <Border Background="{StaticResource CardBackground}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="16">
+                            <StackPanel>
+                                <!-- Header with Settings Icon -->
+                                <Grid Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0"
+                                            Background="{StaticResource WarningOrange}"
+                                            Width="3"
+                                            Height="20"
+                                            CornerRadius="2"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,10,0"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               Text="Velocity Control"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+
+                                    <Button Grid.Column="2"
+    Click="BtnVelocityControlSettings_Click"
+    Width="28"
+    Height="28"
+    Padding="0"
+    ToolTip="Control Parameters"
+    Cursor="Hand">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}"
+            CornerRadius="5"
+            Padding="5">
+                                                                <Path Data="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+              Fill="{StaticResource TextSecondary}"
+              Stretch="Uniform"/>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#374151"/>
+                                                                </Trigger>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter Property="Background" Value="#4B5563"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Target Velocity -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="50"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="Target Velocity"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"/>
+
+                                    <TextBox x:Name="txtTargetVelocity"
+                                             Grid.Column="1"
+                                             Text="0.0"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,6,0"/>
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="deg/s"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11"/>
+                                </Grid>
+
+                                <!-- Move Velocity Button -->
+                                <Button x:Name="btnMoveVelocity"
+                                        Content="Move Velocity"
+                                        Height="32"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Style="{StaticResource ModernButton}"
+                                        Click="BtnMoveVelocity_Click"
+                                        Margin="0,0,0,10"/>
+
+                                <!-- Stop Velocity Button -->
+                                <Button x:Name="btnStopVelocity"
+                                        Content="Stop Velocity"
+                                        Height="32"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Click="BtnStopVelocity_Click">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ModernButton}">
+                                            <Setter Property="Background" Value="{StaticResource ErrorRed}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#DC2626"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Right Panel: Chart -->
+        <local:AzimuthChartPanel x:Name="chartPanel"
+                                 Grid.Column="1"
+                                 Margin="10,0,0,0"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,35 @@
+const {chromium}=require('C:/Users/Narit/AppData/Local/OpenAI/Codex/runtimes/cua_node/3dd31cfff853001c/bin/node_modules/playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({channel:'msedge',headless:true});
+ const page=await browser.newPage({viewport:{width:1680,height:960}});
+ const notifications=[],errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/api/audit/events',async r=>{if(r.request().method()==='POST'){notifications.push(...r.request().postDataJSON().events.filter(e=>e.kind==='ui.notification'));await r.fulfill({json:{accepted:1}});}else await r.continue();});
+ let failed=true;
+ await page.route('**/api/pointing/workbench',r=>failed?r.fulfill({status:503,json:{detail:'unavailable'}}):r.continue());
+ await page.goto('http://localhost:8765');
+ await page.locator('[data-nav="pointing"]').click();
+ await page.waitForFunction(()=>document.querySelector('#toast').classList.contains('visible'));
+ assert.equal(await page.locator('#toast').textContent(),'Pointing workbench unavailable');
+ assert.equal(await page.locator('#pointing-error').count(),0);
+ await page.waitForTimeout(300);
+ const box=await page.locator('#toast').boundingBox();
+ assert.ok(Math.abs(1680-box.x-box.width-24)<2);
+ assert.ok(Math.abs(960-box.y-box.height-24)<2);
+ await page.waitForTimeout(6200);
+ assert.equal(await page.locator('#toast').evaluate(e=>e.classList.contains('visible')),false);
+ assert.equal(notifications.filter(e=>e.details.message==='Pointing workbench unavailable').length,1);
+ failed=false;
+ await page.waitForTimeout(1800);
+ failed=true;
+ await page.waitForTimeout(2200);
+ assert.equal(notifications.filter(e=>e.details.message==='Pointing workbench unavailable').length,2);
+ await page.setViewportSize({width:390,height:844});
+ const mobile=await page.locator('#toast').boundingBox();
+ assert.ok(mobile.x>=0&&mobile.x+mobile.width<=390);
+ assert.deepEqual(errors,[]);
+ console.log('PASS: bottom-right toast, mobile fit, audit event, repeated polling deduplication, recovery and recurrence');
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1);});
+

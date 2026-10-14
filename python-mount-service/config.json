@@ -1,0 +1,7 @@
+{
+  "mode": "hardware",
+  "port": "COM3",
+  "baud": 921600,
+  "serial_number": "25262718",
+  "poll_interval_ms": 5
+}

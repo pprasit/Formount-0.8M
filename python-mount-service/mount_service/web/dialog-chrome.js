@@ -1,0 +1,3 @@
+const glyph='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+function styleCloseButtons(){document.querySelectorAll('dialog button').forEach(button=>{if(button.dataset.closeChrome)return;const label=button.getAttribute('aria-label')||'';if(button.classList.contains('close-dialog')||/^Close\b/i.test(label)||/-close$/.test(button.id)){button.dataset.closeChrome='true';button.classList.add('dialog-close-control');button.innerHTML=glyph;if(!label)button.setAttribute('aria-label','Close window');}});}
+styleCloseButtons();new MutationObserver(styleCloseButtons).observe(document.body,{childList:true,subtree:true});

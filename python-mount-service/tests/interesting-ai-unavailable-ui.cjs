@@ -1,0 +1,10 @@
+const {chromium}=require('C:/Users/Narit/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage();let posts=0;
+await page.route('**/api/astronomy/interesting-ai/status',r=>r.fulfill({status:404,json:{detail:'Not Found'}}));
+await page.route('**/api/astronomy/interesting-ai/build',r=>{posts++;return r.fulfill({json:{}})});
+await page.goto('http://127.0.0.1:8765');await page.locator('[data-nav=interesting]').click();await page.locator('#sky-build-ai').click();
+await page.waitForFunction(()=>document.querySelector('.ai-build-status').textContent.includes('server needs'));
+assert.equal(await page.locator('#interesting-ai-dialog [type=submit]').isDisabled(),true);
+assert.equal((await page.locator('.ai-build-status').textContent()).includes('Your job continues'),false);assert.equal(posts,0);
+await browser.close();console.log('Unavailable status API displays accurate error and prevents builds');})().catch(e=>{console.error(e);process.exit(1)});

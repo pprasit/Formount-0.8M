@@ -1,0 +1,136 @@
+{
+  "Azimuth_SN": "25262718",
+  "Azimuth_BaudRate": 921600,
+  "Azimuth_PollingInterval": 100,
+  "Azimuth_AxisConfig": {
+    "Position_Offset_Deg": 0,
+    "CCW_Limit_Deg": -300,
+    "CW_Limit_Deg": 300,
+    "Encoder_Resolution": 4294967296,
+    "Max_Control_Velocity_Deg_Sec": 100,
+    "Max_Velocity_Deg_Sec": 30,
+    "Max_Acceleration_Deg_Sec2": 200,
+    "Acceleration_Deg_Sec2": 30,
+    "Deceleration_Deg_Sec2": 30,
+    "Stop_Deceleration_Deg_Sec2": 30,
+    "Smooth_Factor_Ms": 408,
+    "Limit_Warning_Distance_Deg": 0.5,
+    "Tracking_Sensitivity_Deg": 0.01,
+    "Current_Limit_Amp": 10,
+    "Time_Duration_Ms": 1000
+  },
+  "Azimuth_PD_Controller": {
+    "Kp": 1,
+    "Ki": 0,
+    "Kd": 0.1,
+    "Deadband": 0.001
+  },
+  "Azimuth_Tuning_Parameters": {
+    "Velocity_Gain": 3.73356E-05,
+    "Velocity_Integral": 0.7619,
+    "Position_Gain": 486.2025,
+    "Acc_Feed_Forward": 0,
+    "Vel_Feed_Forward": 1
+  },
+  "Tuning_Steps": {
+    "Velocity_Gain_Step": 1.1E-06,
+    "Velocity_Integral_Step": 0.001,
+    "Position_Gain_Step": 1,
+    "Acc_Feed_Forward_Step": 1E-06,
+    "Vel_Feed_Forward_Step": 0.1
+  },
+  "PD_Controller": {
+    "Kp": 1,
+    "Ki": 0,
+    "Kd": 0.1,
+    "Deadband": 0.001
+  },
+  "Tuning_Parameters": {
+    "Velocity_Gain": 3.73356E-05,
+    "Velocity_Integral": 0.7619,
+    "Position_Gain": 486.2025,
+    "Acc_Feed_Forward": 0,
+    "Vel_Feed_Forward": 1
+  },
+  "Tuning_Offsets": {
+    "Kp_Offset": 0.1,
+    "Ki_Offset": 0.01,
+    "Kd_Offset": 0.01,
+    "Max_Velocity_Offset": 1,
+    "Deadband_Offset": 0.01,
+    "Velocity_Gain_Offset": 1E-06,
+    "Velocity_Integral_Offset": 0.01,
+    "Position_Gain_Offset": 1,
+    "Acc_Feed_Forward_Offset": 0.01,
+    "Vel_Feed_Forward_Offset": 0.01,
+    "Acceleration_Offset": 10,
+    "Deceleration_Offset": 10,
+    "Stop_Deceleration_Offset": 10,
+    "Smooth_Offset": 1
+  },
+  "Altitude_SN": "",
+  "Altitude_BaudRate": 115200,
+  "Altitude_PollingInterval": 100,
+  "Altitude_AxisConfig": {
+    "Position_Offset_Deg": 0,
+    "Down_Limit_Deg": 0,
+    "Up_Limit_Deg": 90,
+    "Encoder_Resolution": 4294967296,
+    "Max_Velocity_Deg_Sec": 30,
+    "Acceleration_Deg_Sec2": 30,
+    "Deceleration_Deg_Sec2": 30,
+    "Stop_Deceleration_Deg_Sec2": 30,
+    "Smooth_Factor_Ms": 408,
+    "Limit_Warning_Distance_Deg": 0.5,
+    "Tracking_Sensitivity_Deg": 0.01
+  },
+  "Altitude_PD_Controller": {
+    "Kp": 1,
+    "Ki": 0,
+    "Kd": 0.1,
+    "Deadband": 0.001
+  },
+  "Altitude_Tuning_Parameters": {
+    "Velocity_Gain": 3.73356E-05,
+    "Velocity_Integral": 0.7619,
+    "Position_Gain": 486.2025,
+    "Acc_Feed_Forward": 0,
+    "Vel_Feed_Forward": 1
+  },
+  "Observer_Location": {
+    "LocationName": "Chiang Mai, Thailand",
+    "Latitude_Deg": 18.852638,
+    "Longitude_Deg": 98.958352,
+    "Altitude_Meters": 350
+  },
+  "System_Settings": {
+    "NtpServerAddress": "pool.ntp.org",
+    "NtpSyncIntervalMinutes": 60,
+    "AutoSyncEnabled": false,
+    "EnableNtpSync": true
+  },
+  "Satellite_Tracking_PD_Gains": {
+    "Kp": 0.7,
+    "Kd": 0.07,
+    "VffGain": 0.9,
+    "BasePredictionTimeMs": 50,
+    "MaxPredictionTimeMs": 500
+  },
+  "Sidereal_Tracking_PD_Gains": {
+    "Azimuth_Kp": 1.7,
+    "Azimuth_Kd": 0.3,
+    "Altitude_Kp": 1.2,
+    "Altitude_Kd": 0.3,
+    "EnableEarthRotationCompensation": true
+  },
+  "Mount_Calibration_Settings": {
+    "TrackingDuration_Seconds": 8,
+    "ArrivalThreshold_Deg": 0.5,
+    "RmsStabilityThreshold_Arcsec": 3,
+    "RmsStabilityDuration_Ms": 1000,
+    "PlateSolverSearchRadius_Deg": 5,
+    "PointingModelFilePath": ""
+  },
+  "LastModified": "2026-01-31T13:37:17.553961+07:00",
+  "Version": "1.0-Platinum"
+}

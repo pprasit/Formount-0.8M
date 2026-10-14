@@ -1,0 +1,262 @@
+﻿<UserControl x:Class="ForkMount_WPF.UI.PlanetTrackingControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="DarkBackground" Color="#0F1419"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#1A1F2E"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#2D3748"/>
+        <SolidColorBrush x:Key="PrimaryAccent" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#10B981"/>
+        <SolidColorBrush x:Key="ErrorRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#9CA3AF"/>
+        <SolidColorBrush x:Key="PlanetOrange" Color="#F59E0B"/>
+
+        <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="RowBackground" Value="#1F2937"/>
+            <Setter Property="AlternatingRowBackground" Value="#252D3D"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="ColumnHeaderHeight" Value="40"/>
+            <Setter Property="RowHeight" Value="40"/>
+        </Style>
+
+        <Style x:Key="ColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#252D3D"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        </Style>
+
+        <Style x:Key="CellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PlanetOrange}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Row Style for Current Target Highlighting -->
+        <Style x:Key="TrackingRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsCurrentTarget}" Value="True">
+                    <Setter Property="Background" Value="#7C2D12"/>
+                    <Setter Property="BorderBrush" Value="#F59E0B"/>
+                    <Setter Property="BorderThickness" Value="2,0,0,0"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with Title and Controls -->
+        <Border Grid.Row="0"
+                Background="#1F2937"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Title with Planet Icon -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Solar System Objects"
+                               Foreground="{StaticResource TextPrimary}"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Start/Stop Track Button -->
+                <Button x:Name="btnStartTrack" Grid.Column="2" Click="BtnStartTrack_Click"
+                        Content="Start Track"
+                        Background="{StaticResource SuccessGreen}"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Height="36"
+                        Width="120"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#059669"/>
+                                </Trigger>
+                                <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False">
+                                    <Setter Property="Background" Value="#6B7280"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Planet List DataGrid -->
+        <Border Grid.Row="1"
+                Background="#1F2937"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+            <DataGrid x:Name="dgPlanets"
+                      Style="{StaticResource ModernDataGrid}"
+                      RowStyle="{StaticResource TrackingRowStyle}"
+                      ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                      CellStyle="{StaticResource CellStyle}"
+                      SelectionChanged="DgPlanets_SelectionChanged"
+                      CanUserSortColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Object" Binding="{Binding Name}" Width="120" SortMemberPath="Name"/>
+                    <DataGridTextColumn Header="RA (J2000)" Binding="{Binding RAString}" Width="110" SortMemberPath="RightAscension"/>
+                    <DataGridTextColumn Header="Dec (J2000)" Binding="{Binding DecString}" Width="110" SortMemberPath="Declination"/>
+                    <DataGridTextColumn Header="Azimuth" Binding="{Binding Azimuth, StringFormat=F2}" Width="100" SortMemberPath="Azimuth"/>
+                    <DataGridTextColumn Header="Altitude" Binding="{Binding Altitude, StringFormat=F2}" Width="100" SortMemberPath="Altitude"/>
+                    <DataGridTextColumn Header="Distance" Binding="{Binding DistanceString}" Width="100" SortMemberPath="Distance"/>
+                    <DataGridTextColumn Header="Magnitude" Binding="{Binding Magnitude, StringFormat=F1}" Width="90" SortMemberPath="Magnitude"/>
+                    <DataGridTextColumn Header="Phase" Binding="{Binding PhaseString}" Width="80" SortMemberPath="Phase"/>
+                    <DataGridTemplateColumn Header="Visible" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Width="12" Height="12">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="#EF4444"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsVisible}" Value="True">
+                                                    <Setter Property="Fill" Value="#10B981"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2"
+                Background="#1F2937"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16"
+                Margin="0,12,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="txtStatus"
+                           Grid.Column="0"
+                           Text="Ready"
+                           Foreground="{StaticResource TextSecondary}"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+
+                <!-- Track Selected Button -->
+                <Button x:Name="btnTrackSelected" 
+                        Grid.Column="2"
+                        Content="Track Selected"
+                        Width="130"
+                        Height="32"
+                        Background="{StaticResource PlanetOrange}"
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        Visibility="Collapsed"
+                        Click="BtnTrackSelected_Click"
+                        ToolTip="Track the selected planet">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#D97706"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

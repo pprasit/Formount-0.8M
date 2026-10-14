@@ -1,0 +1,1592 @@
+﻿<Window x:Class="ForkMount_WPF.UI.ManualControlWindow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:ui="clr-namespace:ForkMount_WPF.UI"
+mc:Ignorable="d"
+Title="Manual Control - ForkMount Drive"
+Height="950"
+Width="1450"
+WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!-- Colors -->
+        <SolidColorBrush x:Key="DarkBackground" Color="#0F1419"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#1A1F2E"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#2D3748"/>
+        <SolidColorBrush x:Key="PrimaryAccent" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#10B981"/>
+        <SolidColorBrush x:Key="ErrorRed" Color="#EF4444"/>
+        <SolidColorBrush x:Key="WarningOrange" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#9CA3AF"/>
+
+        <!-- Direction Button Style -->
+        <Style x:Key="DirectionButton" TargetType="Button">
+            <Setter Property="Background" Value="#2D3748"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3B82F6"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#10B981"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Implicit Button Style: round corners + cursor hand (applies to all buttons without explicit style) -->
+        <Style TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#374151"/>
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,0,8,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernComboBoxItem" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#2563EB"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#3B82F6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernComboBoxToggleButton" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="Transparent"
+                                BorderThickness="0"
+                                CornerRadius="6"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="#1F2937"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="10,0,8,0"/>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource ModernComboBoxItem}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="OuterBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="38"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ContentPresenter Grid.Column="0"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Left"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+
+                                    <Border x:Name="ArrowZone"
+                                            Grid.Column="1"
+                                            Background="#273244"
+                                            CornerRadius="0,6,6,0">
+                                        <Path Data="M 0 0 L 4 4 L 8 0"
+                                              Stroke="{StaticResource TextSecondary}"
+                                              StrokeThickness="2"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <ToggleButton Style="{StaticResource ModernComboBoxToggleButton}"
+                                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+
+                            <Popup IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Border Background="#172030"
+                                        BorderBrush="{StaticResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ScrollViewer MaxHeight="220">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource PrimaryAccent}"/>
+                                <Setter TargetName="ArrowZone" Property="Background" Value="#334155"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource PrimaryAccent}"/>
+                                <Setter TargetName="ArrowZone" Property="Background" Value="#334155"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource PrimaryAccent}"/>
+                                <Setter TargetName="ArrowZone" Property="Background" Value="#334155"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{StaticResource DarkBackground}"
+            CornerRadius="15"
+            BorderBrush="{StaticResource PrimaryAccent}"
+            BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.5" ShadowDepth="5" BlurRadius="20"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title Bar -->
+            <Border Grid.Row="0"
+                    Background="#1F2937"
+                    CornerRadius="15,15,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" 
+                                VerticalAlignment="Center"
+                                Margin="20,0">
+                        <Path Data="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"
+                              Fill="{StaticResource PrimaryAccent}"
+                              Width="20"
+                              Height="20"
+                              Stretch="Uniform"
+                              Margin="0,0,12,0"/>
+
+                        <TextBlock Text="Tracking and Control"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimary}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Button x:Name="btnClose"
+                            Content="✕"
+                            HorizontalAlignment="Right"
+                            Width="50"
+                            Height="50"
+                            FontSize="20"
+                            Foreground="{StaticResource TextPrimary}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="BtnClose_Click"
+                            Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="border"
+                                                    Background="{TemplateBinding Background}"
+                                                    CornerRadius="0,15,0,0">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="#EF4444"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Main Content with Tabs and Sky Map -->
+            <Grid Grid.Row="1" Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="380" MinWidth="350" MaxWidth="450"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="450" MinWidth="350" MaxWidth="450"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Tab Control -->
+                <TabControl x:Name="mainTabControl"
+                        Grid.Column="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Grid.ColumnSpan="3"
+                        SelectionChanged="MainTabControl_SelectionChanged">
+                <TabControl.Resources>
+                    <!-- Modern TabItem Style -->
+                    <Style TargetType="TabItem">
+                        <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+                        <Setter Property="FontWeight" Value="Medium"/>
+                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Border x:Name="Border"
+                                            Background="Transparent"
+                                            BorderThickness="0,0,0,2"
+                                            BorderBrush="Transparent"
+                                            Padding="16,10"
+                                            Margin="0,0,8,0"
+                                            Cursor="Hand">
+                                        <ContentPresenter ContentSource="Header"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PrimaryAccent}"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="#1F2937"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+
+                <!-- Tab 1: Direction Control -->
+                <TabItem Header="Direction Control">
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MinWidth="400"/>
+                            <ColumnDefinition Width="1.2*" MinWidth="450"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LEFT PANEL: Direction Control -->
+                        <Grid Grid.Column="0" Margin="0,0,10,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Status Display -->
+                            <Border Grid.Row="0"
+                                    Background="{StaticResource CardBackground}"
+                                    CornerRadius="10"
+                                    Padding="15"
+                                    Margin="0,0,0,20">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Azimuth Status -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Azimuth (Left/Right)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11"
+                                               Margin="0,0,0,5"/>
+                                        <TextBlock x:Name="txtAzimuthVelocity"
+                                               Text="0.00 deg/s"
+                                               Foreground="{StaticResource PrimaryAccent}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               FontFamily="Consolas"/>
+                                    </StackPanel>
+
+                                    <!-- Altitude Status -->
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <TextBlock Text="Altitude (Up/Down)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11"
+                                               Margin="0,0,0,5"/>
+                                        <TextBlock x:Name="txtAltitudeVelocity"
+                                               Text="N/A"
+                                               Foreground="{StaticResource WarningOrange}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               FontFamily="Consolas"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Direction Pad with Background -->
+                            <Border Grid.Row="1"
+                                Background="{StaticResource CardBackground}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="15"
+                                Padding="20"
+                                HorizontalAlignment="Stretch"
+                                Height="280">
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Height="200">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Up-Left Diagonal Button -->
+                                    <Button x:Name="btnUpLeft"
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Style="{StaticResource DirectionButton}"
+                                        Margin="5"
+                                        PreviewMouseLeftButtonDown="BtnUpLeft_MouseDown"
+                                        PreviewMouseLeftButtonUp="BtnUpLeft_MouseUp">
+                                        <Path Data="M7 14L12 9L17 14H7Z"
+                      Fill="White"
+                      Width="19"
+                      Height="19"
+                      Stretch="Uniform" RenderTransformOrigin="0.5,0.5" >
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="-45"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Button>
+
+                                    <!-- Up Button (Altitude +) -->
+                                    <Button x:Name="btnUp"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Style="{StaticResource DirectionButton}"
+                                    Margin="5"
+                                    PreviewMouseLeftButtonDown="BtnUp_MouseDown"
+                                    PreviewMouseLeftButtonUp="BtnUp_MouseUp">
+                                        <Path Data="M7 14L12 9L17 14H7Z"
+                                      Fill="White"
+                                      Width="28"
+                                      Height="28"
+                                      Stretch="Uniform"/>
+                                    </Button>
+
+                                    <!-- Up-Right Diagonal Button -->
+                                    <Button x:Name="btnUpRight"
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Style="{StaticResource DirectionButton}"
+                                    Margin="5"
+                                    PreviewMouseLeftButtonDown="BtnUpRight_MouseDown"
+                                    PreviewMouseLeftButtonUp="BtnUpRight_MouseUp">
+                                        <Path Data="M7 14L12 9L17 14H7Z"
+Fill="White"
+Width="19"
+Height="19"
+Stretch="Uniform" RenderTransformOrigin="0.5,0.5" >
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="45"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Button>
+
+                                    <!-- Left Button (Azimuth -) -->
+                                    <Button x:Name="btnLeft"
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Style="{StaticResource DirectionButton}"
+                                    Margin="5"
+                                    PreviewMouseLeftButtonDown="BtnLeft_MouseDown"
+                                    PreviewMouseLeftButtonUp="BtnLeft_MouseUp">
+                                        <Path Data="M14 7L9 12L14 17V7Z"
+                                      Fill="White"
+                                      Width="28"
+                                      Height="28"
+                                      Stretch="Uniform"/>
+                                    </Button>
+
+                                    <!-- Center Stop Button -->
+                                    <Button x:Name="btnStop"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Click="BtnStop_Click"
+                                    Margin="5"
+                                    ToolTip="Emergency Stop - Stop all motion"
+                                    Cursor="Hand">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="#EF4444"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border x:Name="border"
+                                                            Background="{TemplateBinding Background}"
+                                                            CornerRadius="10">
+                                                                <Border.Effect>
+                                                                    <DropShadowEffect Color="#EF4444" 
+                                                                            Opacity="0.6" 
+                                                                            ShadowDepth="0" 
+                                                                            BlurRadius="20"/>
+                                                                </Border.Effect>
+                                                                <StackPanel HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center">
+                                                                    <Path Data="M6 6H18V18H6V6Z"
+                                                                  Fill="White"
+                                                                  Width="20"
+                                                                  Height="20"
+                                                                  Stretch="Uniform"
+                                                                  Margin="0,0,0,4"/>
+                                                                </StackPanel>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="border" Property="Background" Value="#DC2626"/>
+                                                                </Trigger>
+                                                                <Trigger Property="IsPressed" Value="True">
+                                                                    <Setter TargetName="border" Property="Background" Value="#B91C1C"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                    <!-- Right Button (Azimuth +) -->
+                                    <Button x:Name="btnRight"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Style="{StaticResource DirectionButton}"
+                                    Margin="5"
+                                    PreviewMouseLeftButtonDown="BtnRight_MouseDown"
+                                    PreviewMouseLeftButtonUp="BtnRight_MouseUp">
+                                        <Path Data="M10 17L15 12L10 7V17Z"
+                                      Fill="White"
+                                      Width="28"
+                                      Height="28"
+                                      Stretch="Uniform"/>
+                                    </Button>
+
+                                    <!-- Down Button (Altitude -) -->
+                                    <Button x:Name="btnDown"
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        Style="{StaticResource DirectionButton}"
+                                        Margin="5"
+                                        PreviewMouseLeftButtonDown="BtnDown_MouseDown"
+                                        PreviewMouseLeftButtonUp="BtnDown_MouseUp">
+                                        <Path Data="M7 10L12 15L17 10H7Z"
+                                          Fill="White"
+                                          Width="28"
+                                          Height="28"
+                                          Stretch="Uniform"/>
+                                    </Button>
+
+                                    <Button x:Name="btnDownLeft"
+                  Grid.Row="2"
+                  Grid.Column="0"
+                  Style="{StaticResource DirectionButton}"
+                  Margin="5"
+                  PreviewMouseLeftButtonDown="BtnDownLeft_MouseDown"
+                  PreviewMouseLeftButtonUp="BtnDownLeft_MouseUp">
+                                        <Path Data="M7 14L12 9L17 14H7Z"
+Fill="White"
+Width="19"
+Height="19"
+Stretch="Uniform" RenderTransformOrigin="0.5,0.5" >
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="235"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Button>
+
+                                    <Button x:Name="btnDownRight"
+                  Grid.Row="2"
+                  Grid.Column="2"
+                  Style="{StaticResource DirectionButton}"
+                  Margin="5"
+                  PreviewMouseLeftButtonDown="BtnDownRight_MouseDown"
+                  PreviewMouseLeftButtonUp="BtnDownRight_MouseUp">
+                                        <Path Data="M7 14L12 9L17 14H7Z"
+Fill="White"
+Width="19"
+Height="19"
+Stretch="Uniform" RenderTransformOrigin="0.5,0.5" >
+                                            <Path.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform Angle="135"/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <!-- Velocity Control -->
+                            <Border Grid.Row="2"
+                                Background="{StaticResource CardBackground}"
+                                CornerRadius="10"
+                                Padding="15"
+                                Margin="0,20,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Manual Move Mode"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"
+                                               Margin="0,0,0,8"/>
+
+                                    <ComboBox x:Name="cmbDirectionMode"
+                                              Style="{StaticResource ModernComboBox}"
+                                              Margin="0,0,0,10"
+                                              SelectionChanged="CmbDirectionMode_SelectionChanged">
+                                        <ComboBoxItem Content="Movement Velocity" IsSelected="True"/>
+                                        <ComboBoxItem Content="Direction Offset"/>
+                                    </ComboBox>
+
+                                    <TextBlock x:Name="txtDirectionValueLabel"
+                                               Text="Movement Velocity"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"
+                                               Margin="0,0,0,8"/>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox x:Name="txtVelocity"
+                                             Grid.Column="0"
+                                             Text="20.0"
+                                             TextChanged="TxtVelocity_TextChanged"
+                                             Style="{StaticResource ModernTextBox}"
+                                             HorizontalContentAlignment="Left"
+                                             VerticalAlignment="Center"
+                                             Margin="0,0,10,0"/>
+
+                                        <TextBlock x:Name="txtDirectionValueUnit"
+                                                   Grid.Column="1"
+                                                   Text="deg/s"
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="14"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"/>
+                                    </Grid>
+
+                                    <StackPanel x:Name="offsetTypePanel" Margin="0,12,0,0" Visibility="Collapsed">
+                                        <TextBlock Text="Offset Type"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="12"
+                                               Margin="0,0,0,8"/>
+
+                                        <ComboBox x:Name="cmbOffsetType"
+                                              Style="{StaticResource ModernComboBox}"
+                                              SelectionChanged="CmbOffsetType_SelectionChanged">
+                                            <ComboBoxItem Content="Azm/Alt" Tag="AzAlt" IsSelected="True"/>
+                                            <ComboBoxItem Content="RA/Dec" Tag="RaDec"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Info -->
+                            <Border Grid.Row="3"
+                                Background="{StaticResource CardBackground}"
+                                CornerRadius="10"
+                                Padding="15"
+                                Margin="0,20,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Instructions"
+                                           Foreground="{StaticResource TextPrimary}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+
+                                    <TextBlock Foreground="{StaticResource TextSecondary}"
+                                           x:Name="txtDirectionInstructions"
+                                           FontSize="11"
+                                           TextWrapping="Wrap"
+                                           LineHeight="18">
+                                    <Run Text="• Press and hold arrow buttons to move"/>
+                                    <LineBreak/>
+                                    <Run Text="• Release button to stop"/>
+                                    <LineBreak/>
+                                    <Run Text="• Adjust velocity before moving"/>
+                                    <LineBreak/>
+                                    <Run Text="• Motor will stop when button is released"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- RIGHT PANEL: Goto Position Table -->
+                        <Grid x:Name="directionControlRightPanel" Grid.Column="1" Margin="10,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Direction Offset Preview -->
+                            <Border x:Name="borderDirectionOffsetPreview"
+                                Grid.Row="0"
+                                Background="#451A1A"
+                                BorderBrush="#B91C1C"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="15"
+                                Margin="0,0,0,10"
+                                Visibility="Collapsed"
+                                SizeChanged="BorderDirectionOffsetPreview_SizeChanged">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                            <TextBlock Text="Direction Offset Preview"
+                                                   Foreground="#FEE2E2"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="txtOffsetPreviewSummary"
+                                                   Text="No offset movement yet"
+                                                   Foreground="#FCA5A5"
+                                                   FontSize="11"
+                                                   Margin="0,4,0,0"/>
+                                        </StackPanel>
+
+                                        <Button x:Name="btnResetOffset"
+                                            Grid.Column="1"
+                                            Content="Reset Offset"
+                                            Click="BtnResetOffset_Click"
+                                            Background="#DC2626"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            Padding="10,6"
+                                            MinWidth="88"
+                                            Height="30"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Right"
+                                            FontSize="10"
+                                            FontWeight="SemiBold"
+                                            IsEnabled="False"
+                                            Cursor="Hand"/>
+                                    </Grid>
+
+                                    <Canvas x:Name="offsetPreviewCanvas"
+                                        Grid.Row="1"
+                                        MinHeight="180"
+                                        Background="Transparent"/>
+
+                                    <TextBlock x:Name="txtOffsetPreviewLegend"
+                                           Grid.Row="2"
+                                           Text="The preview will appear after the first real direction offset movement."
+                                           Foreground="#FECACA"
+                                           FontSize="11"
+                                           Margin="0,10,0,0"
+                                           TextWrapping="Wrap"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Header & Add Button -->
+                            <Border Grid.Row="1"
+                                Background="{StaticResource CardBackground}"
+                                CornerRadius="10"
+                                Padding="15"
+                                Margin="0,0,0,10">
+                                <Grid>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="Goto Position Presets"
+                                               Foreground="{StaticResource TextPrimary}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,0,10"/>
+
+                                        <!-- Input Fields -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="1*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                                <TextBlock Text="Azimuth (deg)" Foreground="{StaticResource TextSecondary}" FontSize="10" Margin="0,0,0,3"/>
+                                                <TextBox x:Name="txtNewAzimuth" Text="0.00" Style="{StaticResource ModernTextBox}" Height="32"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1" Margin="5,0,5,0">
+                                                <TextBlock Text="Altitude (deg)" Foreground="{StaticResource TextSecondary}" FontSize="10" Margin="0,0,0,3"/>
+                                                <TextBox x:Name="txtNewAltitude" Text="0.00" Style="{StaticResource ModernTextBox}" Height="32"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2" Margin="5,0,0,0">
+                                                <TextBlock Text="Velocity (deg/s)" Foreground="{StaticResource TextSecondary}" FontSize="10" Margin="0,0,0,3"/>
+                                                <TextBox x:Name="txtNewVelocity" Text="1.0" Style="{StaticResource ModernTextBox}" Height="32"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Add Button -->
+                                        <Button x:Name="btnAddPosition"
+                                            Content="Add Position"
+                                            Click="BtnAddPosition_Click"
+                                            Background="{StaticResource PrimaryAccent}"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            Height="36"
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Cursor="Hand"
+                                            Margin="0,10,0,0">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Background" Value="{StaticResource PrimaryAccent}"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}"
+                                                                    CornerRadius="6">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#2563EB"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- DataGrid -->
+                            <Border Grid.Row="2"
+                                Background="{StaticResource CardBackground}"
+                                CornerRadius="10"
+                                Padding="10"
+                                Margin="0,0,0,10">
+                                <DataGrid x:Name="dgGotoPositions"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      SelectionMode="Single"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      GridLinesVisibility="Horizontal"
+                                      HorizontalGridLinesBrush="{StaticResource BorderBrush}"
+                                      HeadersVisibility="Column"
+                                      RowBackground="#1F2937"
+                                      AlternatingRowBackground="#252D3D"
+                                      RowHeight="38"
+                                      ColumnHeaderHeight="38"
+                                      SelectionChanged="DgGotoPositions_SelectionChanged">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="#" Binding="{Binding Id}" Width="40" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+                                                    <Setter Property="FontSize" Value="12"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <DataGridTextColumn Header="Azimuth (deg)" Binding="{Binding Azimuth, StringFormat=F2}" Width="*" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                                                    <Setter Property="FontFamily" Value="Consolas"/>
+                                                    <Setter Property="FontSize" Value="12"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <DataGridTextColumn Header="Altitude (deg)" Binding="{Binding Altitude, StringFormat=F2}" Width="*" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                                                    <Setter Property="FontFamily" Value="Consolas"/>
+                                                    <Setter Property="FontSize" Value="12"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <DataGridTextColumn Header="Velocity (deg/s)" Binding="{Binding Velocity, StringFormat=F1}" Width="*" IsReadOnly="True">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource SuccessGreen}"/>
+                                                    <Setter Property="FontFamily" Value="Consolas"/>
+                                                    <Setter Property="FontSize" Value="12"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="Background" Value="#252D3D"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="FontSize" Value="11"/>
+                                            <Setter Property="Padding" Value="10,8"/>
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                        </Style>
+                                    </DataGrid.ColumnHeaderStyle>
+
+                                    <DataGrid.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource PrimaryAccent}"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.CellStyle>
+                                </DataGrid>
+                            </Border>
+
+                            <!-- Action Buttons -->
+                            <Border Grid.Row="3"
+                                Background="{StaticResource CardBackground}"
+                                CornerRadius="10"
+                                Padding="15">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button x:Name="btnGotoPosition"
+                                        Grid.Column="0"
+                                        Content="Goto Selected Position"
+                                        Click="BtnGotoPosition_Click"
+                                        Background="{StaticResource SuccessGreen}"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        Height="40"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Cursor="Hand">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="{StaticResource SuccessGreen}"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                CornerRadius="6">
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#059669"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Background" Value="#374151"/>
+                                                        <Setter Property="Foreground" Value="#6B7280"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                    <Button x:Name="btnDeletePosition"
+                                        Grid.Column="2"
+                                        Content="Delete Selected"
+                                        Click="BtnDeletePosition_Click"
+                                        Background="{StaticResource ErrorRed}"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        Height="40"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Cursor="Hand">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="{StaticResource ErrorRed}"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                CornerRadius="6">
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#DC2626"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Background" Value="#374151"/>
+                                                        <Setter Property="Foreground" Value="#6B7280"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    
+                                    <!-- Sidereal Tracking Toggle Button -->
+                                    <Button x:Name="btnSiderealTracking"
+                                        Grid.Column="4"
+                                        Click="BtnSiderealTracking_Click"
+                                        Width="130"
+                                        Height="40"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Cursor="Hand"
+                                        ToolTip="Start/Stop Sidereal Tracking at current position">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="#8B5CF6"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border x:Name="border" 
+                                                                    Background="{TemplateBinding Background}"
+                                                                    CornerRadius="6"
+                                                                    BorderThickness="2"
+                                                                    BorderBrush="Transparent">
+                                                                    <StackPanel Orientation="Horizontal" 
+                                                                            HorizontalAlignment="Center" 
+                                                                            VerticalAlignment="Center">
+                                                                        <TextBlock x:Name="txtTrackingStatus" 
+                                                                               Text="Tracking On"
+                                                                               VerticalAlignment="Center"/>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#7C3AED"/>
+                                                    </Trigger>
+                                                    <Trigger Property="Tag" Value="Tracking">
+                                                        <Setter Property="Background" Value="#10B981"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Button.Content>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="☆" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                <TextBlock x:Name="txtSiderealTrackingStatus" Text="Tracking On" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button.Content>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <!-- Tab 2: M3 Control (Axis 4, 18-bit encoder) -->
+                <TabItem Header="M3 Control">
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="420"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- LEFT PANEL: M3 Control -->
+                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+
+                            <!-- Status Card -->
+                            <Border Background="{StaticResource CardBackground}"
+                                    CornerRadius="10" Padding="16" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <TextBlock Text="M3 AXIS STATUS"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" FontWeight="Bold"
+                                               Margin="0,0,0,12"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Current Position"
+                                                       Foreground="{StaticResource TextSecondary}"
+                                                       FontSize="10" Margin="0,0,0,4"/>
+                                            <TextBlock x:Name="txtM3CurrentPosition"
+                                                       Text="---"
+                                                       Foreground="{StaticResource SuccessGreen}"
+                                                       FontSize="22" FontWeight="Bold"
+                                                       FontFamily="Consolas"/>
+                                            <TextBlock Text="deg"
+                                                       Foreground="{StaticResource TextSecondary}"
+                                                       FontSize="10"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="Current Velocity"
+                                                       Foreground="{StaticResource TextSecondary}"
+                                                       FontSize="10" Margin="0,0,0,4"/>
+                                            <TextBlock x:Name="txtM3CurrentVelocity"
+                                                       Text="---"
+                                                       Foreground="{StaticResource PrimaryAccent}"
+                                                       FontSize="22" FontWeight="Bold"
+                                                       FontFamily="Consolas"/>
+                                            <TextBlock Text="deg/s"
+                                                       Foreground="{StaticResource TextSecondary}"
+                                                       FontSize="10"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Position Control Card -->
+                            <Border Background="{StaticResource CardBackground}"
+                                    CornerRadius="10" Padding="16" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <TextBlock Text="POSITION CONTROL"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" FontWeight="Bold"
+                                               Margin="0,0,0,14"/>
+
+                                    <TextBlock Text="Target Position (deg)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="txtM3TargetPosition"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Text="0.00" Margin="0,0,0,14"
+                                             LostFocus="TxtM3TargetPosition_LostFocus"
+                                             KeyDown="TxtM3Field_KeyDown"/>
+
+                                    <TextBlock Text="Velocity (deg/s)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="txtM3Velocity"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Text="10.0" Margin="0,0,0,18"
+                                             LostFocus="TxtM3Velocity_LostFocus"
+                                             KeyDown="TxtM3Field_KeyDown"/>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0"
+                                                Content="Goto Position"
+                                                Height="36"
+                                                Background="#3B82F6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="12"
+                                                FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Goto_Click"/>
+                                        <Button Grid.Column="2"
+                                                Content="Stop"
+                                                Height="36"
+                                                Background="#EF4444"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="12"
+                                                FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Stop_Click"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Info Card -->
+                            <Border Background="{StaticResource CardBackground}"
+                                    CornerRadius="10" Padding="16">
+                                <StackPanel>
+                                    <TextBlock Text="ENCODER INFO"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" FontWeight="Bold"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="Encoder Resolution : 18-bit  (262,144 counts/rev)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10"/>
+                                    <TextBlock Text="Axis Number : 4  (Shared Azimuth Drive)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" Margin="0,4,0,0"/>
+                                    <TextBlock x:Name="txtM3Status"
+                                               Text="Ready"
+                                               Foreground="{StaticResource SuccessGreen}"
+                                               FontSize="10" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- RIGHT PANEL: Port Positions + Motor Enable -->
+                        <StackPanel Grid.Column="1">
+
+                            <!-- Port Positions Card -->
+                            <Border Background="{StaticResource CardBackground}"
+                                    CornerRadius="10" Padding="16" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <!-- Header: title + Step input -->
+                                    <Grid Margin="0,0,0,16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="PORT POSITIONS"
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="10" FontWeight="Bold"
+                                                   VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <TextBlock Text="Step (deg)"
+                                                       Foreground="{StaticResource TextSecondary}"
+                                                       FontSize="10" VerticalAlignment="Center"
+                                                       Margin="0,0,6,0"/>
+                                            <TextBox x:Name="txtM3Step"
+                                                     Style="{StaticResource ModernTextBox}"
+                                                     Text="0.01"
+                                                     Width="80" Height="28"
+                                                     FontSize="12"
+                                                     HorizontalContentAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Port 1 -->
+                                    <TextBlock Text="Port 1 — Position (deg)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11" Margin="0,0,0,5"/>
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="36"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="36"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="txtM3Port1Position"
+                                                 Grid.Column="0"
+                                                 Style="{StaticResource ModernTextBox}"
+                                                 Text="0.00"/>
+                                        <Button Grid.Column="2"
+                                                Content="+"
+                                                Height="36"
+                                                Background="#3B82F6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="16" FontWeight="Bold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Port1Plus_Click"/>
+                                        <Button Grid.Column="4"
+                                                Content="−"
+                                                Height="36"
+                                                Background="#3B82F6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="16" FontWeight="Bold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Port1Minus_Click"/>
+                                        <Button Grid.Column="6"
+                                                Content="Move to Port 1"
+                                                Height="36" Width="120"
+                                                Background="#8B5CF6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="12" FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="BtnM3GotoPort1_Click"/>
+                                    </Grid>
+
+                                    <!-- Port 2 -->
+                                    <TextBlock Text="Port 2 — Position (deg)"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="11" Margin="0,0,0,5"/>
+                                    <Grid Margin="0,0,0,20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="36"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="36"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="txtM3Port2Position"
+                                                 Grid.Column="0"
+                                                 Style="{StaticResource ModernTextBox}"
+                                                 Text="90.00"/>
+                                        <Button Grid.Column="2"
+                                                Content="+"
+                                                Height="36"
+                                                Background="#3B82F6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="16" FontWeight="Bold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Port2Plus_Click"/>
+                                        <Button Grid.Column="4"
+                                                Content="−"
+                                                Height="36"
+                                                Background="#3B82F6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="16" FontWeight="Bold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Port2Minus_Click"/>
+                                        <Button Grid.Column="6"
+                                                Content="Move to Port 2"
+                                                Height="36" Width="120"
+                                                Background="#8B5CF6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="12" FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="BtnM3GotoPort2_Click"/>
+                                    </Grid>
+
+                                    <!-- Divider -->
+                                    <Border Height="1" Background="#2D3748" Margin="0,14,0,14"/>
+
+                                    <!-- Motor Parameters -->
+                                    <TextBlock Text="MOTOR PARAMETERS"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" FontWeight="Bold"
+                                               Margin="0,0,0,10"/>
+
+                                    <!-- Acceleration -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="110"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Acceleration (deg/s²)"
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="11" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2"
+                                                 x:Name="txtM3Acceleration"
+                                                 Text="10.000"
+                                                 Height="32" FontSize="12"
+                                                 Background="#1E2837" Foreground="White"
+                                                 BorderBrush="#3D4F6B" BorderThickness="1"
+                                                 Padding="8,0" VerticalContentAlignment="Center"
+                                                 LostFocus="TxtM3Acceleration_LostFocus"
+                                                 KeyDown="TxtM3Field_KeyDown"/>
+                                    </Grid>
+
+                                    <!-- Deceleration -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="110"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Deceleration (deg/s²)"
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="11" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2"
+                                                 x:Name="txtM3Deceleration"
+                                                 Text="10.000"
+                                                 Height="32" FontSize="12"
+                                                 Background="#1E2837" Foreground="White"
+                                                 BorderBrush="#3D4F6B" BorderThickness="1"
+                                                 Padding="8,0" VerticalContentAlignment="Center"
+                                                 LostFocus="TxtM3Deceleration_LostFocus"
+                                                 KeyDown="TxtM3Field_KeyDown"/>
+                                    </Grid>
+
+                                    <!-- Port Velocity -->
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="110"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="Port Velocity (deg/s)"
+                                                   Foreground="{StaticResource TextSecondary}"
+                                                   FontSize="11" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="2"
+                                                 x:Name="txtM3PortVelocity"
+                                                 Text="1.000"
+                                                 Height="32" FontSize="12"
+                                                 Background="#1E2837" Foreground="White"
+                                                 BorderBrush="#3D4F6B" BorderThickness="1"
+                                                 Padding="8,0" VerticalContentAlignment="Center"
+                                                 LostFocus="TxtM3PortVelocity_LostFocus"
+                                                 KeyDown="TxtM3Field_KeyDown"/>
+                                    </Grid>
+
+                                    <TextBlock Text="* Acc / DCC / Velocity values are sent every time you click Move to Port"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" FontStyle="Italic"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,14"/>
+
+                                    <!-- Save + Enable buttons -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0"
+                                                Content="Save"
+                                                Height="36"
+                                                Background="#8B5CF6"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="12" FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="BtnM3SavePorts_Click"/>
+                                        <Button Grid.Column="2"
+                                                x:Name="btnM3Enable"
+                                                Content="Enable"
+                                                Height="36"
+                                                Background="#10B981"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                FontSize="12" FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="BtnM3Enable_Click"/>
+                                    </Grid>
+
+                                    <!-- Port status -->
+                                    <TextBlock x:Name="txtM3PortStatus"
+                                               Text=""
+                                               Foreground="{StaticResource TextSecondary}"
+                                               FontSize="10" Margin="0,8,0,0"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+
+                    </Grid>
+                </TabItem>
+
+                <!-- Tab 3: Instrument Axis (Axis 3 / FORK1) -->
+                <TabItem Header="Instrument">
+                    <ui:InstrumentControl x:Name="instrumentControl"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch"/>
+                </TabItem>
+
+                <!-- Tab 4: Satellite Tracking -->
+                <TabItem Header="Satellite Object">
+                    <Border Background="{StaticResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="0,10,0,0">
+                        <ui:SatelliteTrackingControl x:Name="satTrackingControl"
+                                                     HorizontalAlignment="Stretch" 
+                                                     VerticalAlignment="Stretch"/>
+                    </Border>
+                </TabItem>
+
+                <!-- Tab 3: Sidereal Tracking -->
+                <TabItem Header="Bright Star Object">
+                    <Border Background="{StaticResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="0,10,0,0">
+                        <ui:SiderealTrackingControl x:Name="siderealTrackingControl"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"/>
+                    </Border>
+                </TabItem>
+                
+                <!-- Tab 4: Planet Tracking -->
+                <TabItem Header="Planet Object">
+                    <Border Background="{StaticResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="0,10,0,0">
+                        <ui:PlanetTrackingControl x:Name="planetTrackingControl"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch"/>
+                    </Border>
+                </TabItem>
+                
+                <!-- Tab 5: Deep Sky Tracking -->
+                <TabItem Header="Deep Sky Object">
+                    <Border Background="{StaticResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="10"
+                            Margin="0,10,0,0">
+                        <ui:DeepSkyTrackingControl x:Name="deepSkyTrackingControl"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch"/>
+                    </Border>
+                </TabItem>
+            </TabControl>
+
+            <!-- Right: Sky Position Map -->
+            <ui:SkyPositionMap x:Name="skyPositionMap"
+                               Grid.Column="4"
+                               VerticalAlignment="Stretch"
+                               HorizontalAlignment="Stretch"
+                               Margin="0,52,0,0"/>
+        </Grid> <!-- Close Content Grid -->
+    </Grid> <!-- Close Main Grid -->
+    </Border>
+</Window>

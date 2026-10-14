@@ -1,0 +1,296 @@
+﻿<Window x:Class="ForkMount_WPF.UI.CalibrationCompleteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Mount Calibration Complete"
+        Height="650" Width="700"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    
+    <Window.Resources>
+        <!-- Dark Theme Colors -->
+        <SolidColorBrush x:Key="WindowBackground" Color="#1E1E1E"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#252526"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#3F3F46"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#CCCCCC"/>
+        <SolidColorBrush x:Key="SuccessColor" Color="#10B981"/>
+        <SolidColorBrush x:Key="WarningColor" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="ErrorColor" Color="#EF4444"/>
+        
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2563EB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Border Background="{StaticResource WindowBackground}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Title Bar -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource CardBackground}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="8,8,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Height="50">
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="txtDialogTitle"
+                                   Text="Mount Calibration Complete!"
+                                   Foreground="{StaticResource SuccessColor}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   FontFamily="Segoe UI"/>
+                        <TextBlock x:Name="txtDialogSubtitle"
+                                   Text="Review the latest pointing model before applying it."
+                                   Foreground="{StaticResource TextSecondary}"
+                                   FontSize="11"
+                                   FontFamily="Segoe UI"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <Button Content="✕"
+                            HorizontalAlignment="Right"
+                            Width="40"
+                            Height="40"
+                            Background="Transparent"
+                            Foreground="{StaticResource TextSecondary}"
+                            BorderThickness="0"
+                            FontSize="20"
+                            FontFamily="Segoe UI"
+                            Cursor="Hand"
+                            Click="CloseButton_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#EF4444"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+            
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20">
+                <StackPanel>
+                    <!-- Statistics Grid -->
+                    <Border Background="{StaticResource CardBackground}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="20"
+                            Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Row 1 -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,15">
+                                <TextBlock Text="Total Points" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                <TextBlock x:Name="txtTotalPoints" Text="40" Foreground="{StaticResource TextPrimary}" FontSize="24" FontWeight="Bold"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,15">
+                                <TextBlock Text="Completed" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                <TextBlock x:Name="txtCompletedPoints" Text="40" Foreground="{StaticResource SuccessColor}" FontSize="24" FontWeight="Bold"/>
+                            </StackPanel>
+                            
+                            <!-- Row 2 -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,15">
+                                <TextBlock Text="Solved" Foreground="{StaticResource TextSecondary}" FontSize="12" FontFamily="Segoe UI"/>
+                                <TextBlock x:Name="txtSolvedPoints" Text="38" Foreground="{StaticResource SuccessColor}" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,15">
+                                <TextBlock Text="Failed" Foreground="{StaticResource TextSecondary}" FontSize="12" FontFamily="Segoe UI"/>
+                                <TextBlock x:Name="txtFailedPoints" Text="2" Foreground="{StaticResource SuccessColor}" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI"/>
+                            </StackPanel>
+                            
+                            <!-- Row 3 (Pending - only shown if > 0) -->
+                            <StackPanel x:Name="rowPending" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0" Visibility="Collapsed">
+                                <TextBlock Text="Pending/Skipped" Foreground="{StaticResource TextSecondary}" FontSize="12" FontFamily="Segoe UI"/>
+                                <TextBlock x:Name="txtPendingPoints" Text="1" Foreground="{StaticResource WarningColor}" FontSize="24" FontWeight="Bold" FontFamily="Segoe UI"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- RMS Statistics -->
+                    <Border Background="{StaticResource CardBackground}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="20"
+                            Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Pointing Accuracy" 
+                                       Foreground="{StaticResource TextPrimary}" 
+                                       FontSize="16" 
+                                       FontWeight="Bold" 
+                                       FontFamily="Segoe UI"
+                                       Margin="0,0,0,15"/>
+                            
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+                                    <TextBlock Text="Overall RMS" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="txtOverallRMS" Text="1.45" Foreground="{StaticResource SuccessColor}" FontSize="32" FontWeight="Bold" FontFamily="Consolas"/>
+                                        <TextBlock Text=" arcsec" Foreground="{StaticResource TextSecondary}" FontSize="14" VerticalAlignment="Bottom" Margin="5,0,0,8"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
+                                    <TextBlock Text="Average Error" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="txtAverageError" Text="1.52" Foreground="{StaticResource TextPrimary}" FontSize="20" FontWeight="Bold" FontFamily="Consolas"/>
+                                        <TextBlock Text=" arcsec" Foreground="{StaticResource TextSecondary}" FontSize="12" VerticalAlignment="Bottom" Margin="5,0,0,4"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">
+                                    <TextBlock Text="Min Error" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="txtMinError" Text="0.42" Foreground="{StaticResource SuccessColor}" FontSize="18" FontWeight="Bold" FontFamily="Consolas"/>
+                                        <TextBlock Text=" arcsec" Foreground="{StaticResource TextSecondary}" FontSize="11" VerticalAlignment="Bottom" Margin="5,0,0,3"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,0">
+                                    <TextBlock Text="Max Error" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock x:Name="txtMaxError" Text="3.21" Foreground="{StaticResource WarningColor}" FontSize="18" FontWeight="Bold" FontFamily="Consolas"/>
+                                        <TextBlock Text=" arcsec" Foreground="{StaticResource TextSecondary}" FontSize="11" VerticalAlignment="Bottom" Margin="5,0,0,3"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="{StaticResource CardBackground}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="20"
+                            Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Latest Pointing Model" 
+                                       Foreground="{StaticResource TextPrimary}" 
+                                       FontSize="16" 
+                                       FontWeight="Bold" 
+                                       FontFamily="Segoe UI"
+                                       Margin="0,0,0,15"/>
+                            <TextBlock x:Name="txtLatestModelStatus"
+                                       Text="No new model file is ready yet."
+                                       Foreground="{StaticResource TextPrimary}"
+                                       FontSize="13"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock x:Name="txtLatestModelPath"
+                                       Text=""
+                                       Foreground="{StaticResource TextSecondary}"
+                                       FontSize="11"
+                                       FontFamily="Consolas"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+            
+            <!-- Buttons -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource CardBackground}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="20"
+                    CornerRadius="0,0,8,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Grid.Column="0"
+                            x:Name="btnUseLatestModel"
+                            Content="Use This Model"
+                            Style="{StaticResource ModernButton}"
+                            Background="#10B981"
+                            FontFamily="Segoe UI"
+                            Click="UseLatestModelButton_Click"/>
+                    
+                    <Button Grid.Column="2"
+                            x:Name="btnKeepCurrentModel"
+                            Content="Keep Current Model"
+                            Style="{StaticResource ModernButton}"
+                            Background="#6B7280"
+                            Click="KeepCurrentModelButton_Click"/>
+
+                    <Button Grid.Column="4"
+                            x:Name="btnRestartCalibration"
+                            Content="Rebuild"
+                            Style="{StaticResource ModernButton}"
+                            Background="#F59E0B"
+                            Click="RestartCalibrationButton_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
